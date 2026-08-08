@@ -42,36 +42,23 @@ android {
 
     defaultConfig {
         applicationId "com.example.leaksextape_app"
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion 21
         targetSdk 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-
         multiDexEnabled true
     }
 
     buildTypes {
         release {
-            // Signing with the debug keys for now
             signingConfig signingConfigs.debug
-            
-            // Enable code shrinking and obfuscation
-            minifyEnabled true
-            shrinkResources true
-            
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            shrinkResources false
         }
         
         debug {
             minifyEnabled false
             shrinkResources false
-        }
-    }
-
-    flavorDimensions "default"
-    productFlavors {
-        production {
-            dimension "default"
         }
     }
 }
@@ -82,6 +69,4 @@ flutter {
 
 dependencies {
     implementation "androidx.multidex:multidex:2.0.1"
-    implementation "androidx.core:core-ktx:1.12.0"
-    implementation "androidx.appcompat:appcompat:1.6.1"
 }
