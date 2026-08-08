@@ -26,30 +26,6 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
-// Universal fix for Flutter plugins that use old flutter.compileSdkVersion syntax
-// This fixes: package_info_plus, wakelock_plus, and other plugins
-subprojects { subproject ->
-    afterEvaluate {
-        if (subproject.plugins.hasPlugin('com.android.library')) {
-            android {
-                // Force compileSdkVersion for all library projects
-                compileSdkVersion 34
-                
-                // Ensure namespace is set
-                if (namespace == null) {
-                    namespace = "com.example.${subproject.name.replace('-', '_')}"
-                }
-            }
-            
-            // Fix for plugins that try to access flutter extension
-            subproject.extensions.create('flutter', Object)
-            subproject.extensions.extraProperties.set('compileSdkVersion', '34')
-            subproject.extensions.extraProperties.set('minSdkVersion', '21')
-            subproject.extensions.extraProperties.set('targetSdkVersion', '34')
-        }
-    }
-}
-
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
