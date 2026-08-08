@@ -57,6 +57,11 @@ jobs:
           flutter --version
           flutter doctor -v
 
+      # Accept Android licenses
+      - name: Accept Android licenses
+        run: |
+          yes | sdkmanager --licenses || true
+
       # Get dependencies
       - name: Get dependencies
         run: flutter pub get
@@ -69,12 +74,20 @@ jobs:
       # Build Release APK
       - name: Build Release APK
         if: github.event.inputs.build_type != 'debug'
-        run: flutter build apk --release --shrink --obfuscate --split-debug-info=build/debug-info
+        run: |
+          echo "Building Release APK..."
+          flutter build apk --release --shrink --obfuscate --split-debug-info=build/debug-info
+          echo "Build completed!"
+          ls -la build/app/outputs/flutter-apk/ || ls -la build/app/outputs/apk/release/ || echo "APK not found in expected location"
 
       # Build Debug APK
       - name: Build Debug APK
         if: github.event.inputs.build_type != 'release'
-        run: flutter build apk --debug
+        run: |
+          echo "Building Debug APK..."
+          flutter build apk --debug
+          echo "Debug build completed!"
+          ls -la build/app/outputs/flutter-apk/ || ls -la build/app/outputs/apk/debug/ || echo "Debug APK not found"
 
       # Upload Release APK artifact
       - name: Upload Release APK
@@ -83,8 +96,8 @@ jobs:
         with:
           name: release-apk
           path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/apk/release/app-release.apk
+            build/app/outputs/flutter-apk/
+            build/app/outputs/apk/
           retention-days: 30
           if-no-files-found: warn
 
@@ -95,8 +108,8 @@ jobs:
         with:
           name: debug-apk
           path: |
-            build/app/outputs/flutter-apk/app-debug.apk
-            build/app/outputs/apk/debug/app-debug.apk
+            build/app/outputs/flutter-apk/
+            build/app/outputs/apk/
           retention-days: 7
           if-no-files-found: warn
 
