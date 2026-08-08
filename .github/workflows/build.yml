@@ -12,9 +12,9 @@ env:
 
 jobs:
   build:
-    name: Build Release & Debug APK
+    name: Build Optimized APK (ABI Splits)
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     
     steps:
       - uses: actions/checkout@v4
@@ -33,24 +33,100 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Build Debug APK
+      - name: Build Debug APK (Universal)
         run: flutter build apk --debug
 
-      - name: Build Release APK
-        run: flutter build apk --release
+      - name: Build Release APK with ABI Splits
+        run: |
+          echo "🔨 Building release APK with architecture splits..."
+          flutter build apk --release --target-platform android-arm,android-arm64,android-x64
+          
+          echo ""
+          echo "📊 Built APK files:"
+          ls -lh build/app/outputs/flutter-apk/
+          
+          # Show sizes for each APK
+          echo ""
+          echo "📱 APK Sizes by Architecture:"
+          for apk in build/app/outputs/flutter-apk/*.apk; do
+            size=$(du -h "$apk" | cut -f1)
+            name=$(basename "$apk")
+            echo "   $name: $size"
+          done
 
-      - name: Upload Debug APK
+      - name: Upload Debug APK (Universal)
         uses: actions/upload-artifact@v4
         with:
-          name: leaksextape-debug-apk
-          path: build/app/outputs/flutter-apk/
+          name: leaksextape-debug-universal
+          path: build/app/outputs/flutter-apk/*debug*.apk
           retention-days: 30
           if-no-files-found: warn
 
-      - name: Upload Release APK
+      - name: Upload Release APK - ARM64 (Most Android devices)
         uses: actions/upload-artifact@v4
         with:
-          name: leaksextape-release-apk
-          path: build/app/outputs/flutter-apk/
+          name: leaksextape-release-arm64
+          path: build/app/outputs/flutter-apk/*arm64*.apk
           retention-days: 30
           if-no-files-found: warn
+
+      - name: Upload Release APK - ARM32 (Older devices)
+        uses: actions/upload-artifact@v4
+        with:
+          name: leaksextape-release-arm32
+          path: build/app/outputs/flutter-apk/*armeabi*.apk
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Upload Release APK - x86_64 (Emulators/ChromeOS)
+        uses: actions/upload-artifact@v4
+        with:
+          name: leaksextape-release-x86_64
+          path: build/app/outputs/flutter-apk/*x86*.apk
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Upload Universal Release APK (All architectures)
+        uses: actions/upload-artifact@v4
+        with:
+          name: leaksextape-release-universal
+          path: |
+            build/app/outputs/flutter-apk/*release*.apk
+            !build/app/outputs/flutter-apk/*arm64*
+            !build/app/outputs/flutter-apk/*armeabi*
+            !build/app/outputs/flutter-apk/*x86*
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Summary of builds
+        run: |
+          echo "## 📦 Build Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Artifact | Target | Size |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|------|" >> $GITHUB_STEP_SUMMARY
+          
+          for apk in build/app/outputs/flutter-apk/*.apk; do
+            if [ -f "$apk" ]; then
+              size=$(du -h "$apk" | cut -f1)
+              name=$(basename "$apk")
+              
+              if [[ "$name" == *"arm64"* ]]; then
+                target="ARM64 (Recommended)"
+              elif [[ "$name" == *"armeabi"* ]]; then
+                target="ARM32"
+              elif [[ "$name" == *"x86"* ]]; then
+                target="x86_64"
+              elif [[ "$name" == *"debug"* ]]; then
+                target="Debug Universal"
+              else
+                target="Universal"
+              fi
+              
+              echo "| \`$name\` | $target | $size |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 💡 Download Recommendation:" >> $GITHUB_STEP_SUMMARY
+          echo "- **ARM64** version is recommended for most modern Android devices (smaller size)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Universal** contains all architectures (larger but compatible with all devices)" >> $GITHUB_STEP_SUMMARY

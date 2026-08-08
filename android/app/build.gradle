@@ -52,14 +52,33 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.debug
-            minifyEnabled false
-            shrinkResources false
+            // Включаем обфускацию и сжатие кода
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         
         debug {
             minifyEnabled false
             shrinkResources false
         }
+    }
+
+    // Разделение APK по архитектурам процессора (ABI)
+    // Позволяет уменьшить размер на 30-50%
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86_64'
+            universalApk true  // Создаёт универсальный APK + отдельные по архитектуре
+        }
+    }
+
+    // Упаковка нативных библиотек по архитектурам
+    packagingOptions {
+        pickFirst '**/libc++_shared.so'
+        pickFirst '**/libjsc.so'
     }
 }
 

@@ -2,23 +2,31 @@
 # You can control the set of applied configuration files using the
 # proguardFiles setting in build.gradle.
 
-# Flutter specific rules
--keep class io.flutter.app.** { *; }
--keep class io.flutter.plugin.** { *; }
--keep class io.flutter.util.** { *; }
--keep class io.flutter.view.** { *; }
+# Flutter-specific rules
 -keep class io.flutter.** { *; }
--keep class io.flutter.plugins.** { *; }
+-dontwarn io.flutter.**
 
-# Keep video player classes
--keep class com.yausername.angel.** { *; }
--keep class com.google.android.exoplayer2.** { *; }
+# Keep native methods
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
 
-# Keep HTML parser classes
--keep class org.jsoup.** { *; }
-
-# Keep model classes
+# Keep custom model classes (prevents obfuscation issues)
 -keep class com.example.leaksextape_app.models.** { *; }
+-keep class com.example.leaksextape_app.data.** { *; }
 
--dontwarn io.flutter.embedding.**
--dontwarn androidx.**
+# Keep annotations
+-keepattributes *Annotation*
+-keepattributes Exceptions
+-keepattributes InnerClasses
+-keepattributes Signature
+
+# Keep source file/line number for crash reports
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
+
+# Optimize code
+-optimizationpasses 5
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-verbose
