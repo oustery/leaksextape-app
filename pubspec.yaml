@@ -26,23 +26,22 @@ dependencies:
   # Local Storage
   shared_preferences: ^2.2.2
   sqflite: ^2.3.2
-  path: ^1.9.0
   
   # UI Components
   cached_network_image: ^3.3.1
   
-  # Utils - pinned versions for compatibility
+  # Utils - use specific compatible versions
   connectivity_plus: ^5.0.2
   url_launcher: ^6.2.3
-  
-  # Explicitly pin problematic packages to working versions
-  package_info_plus: ^8.0.2
-  webview_flutter: ^4.4.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.1
+
+# Force compatible versions for all transitive dependencies
+dependency_overrides:
+  package_info_plus: ^8.0.2
 
 flutter:
   uses-material-design: true
