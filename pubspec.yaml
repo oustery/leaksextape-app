@@ -11,7 +11,7 @@ dependencies:
     sdk: flutter
   
   # HTTP & Networking
-  http: ^1.2.0
+  http: ^1.2.1
   
   # HTML Parsing
   html: ^0.15.4
@@ -31,9 +31,13 @@ dependencies:
   # UI Components
   cached_network_image: ^3.3.1
   
-  # Utils
+  # Utils - pinned versions for compatibility
   connectivity_plus: ^5.0.2
   url_launcher: ^6.2.3
+  
+  # Explicitly pin problematic packages to working versions
+  package_info_plus: ^8.0.2
+  webview_flutter: ^4.4.4
 
 dev_dependencies:
   flutter_test:
