@@ -9,6 +9,7 @@ jobs:
   build:
     name: Build APK
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     
     steps:
       - uses: actions/checkout@v4
@@ -20,23 +21,26 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.9'
+          flutter-version: '3.22.0'
           channel: 'stable'
-          cache: true
 
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Build APK
+      - name: Build Debug APK
         run: flutter build apk --debug
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: Check build result
         if: always()
+        run: |
+          echo "=== BUILD OUTPUT CHECK ==="
+          ls -la build/app/outputs/flutter-apk/ 2>/dev/null || echo "No output directory"
+          
+      - name: Upload APK Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: leaksextape-apk
-          path: |
-            build/app/outputs/flutter-apk/
-            build/app/outputs/apk/
+          name: leaksextape-debug-apk
+          path: build/app/outputs/flutter-apk/
           retention-days: 30
           if-no-files-found: warn
