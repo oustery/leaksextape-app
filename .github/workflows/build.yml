@@ -1,0 +1,139 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main, develop]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - release
+          - debug
+
+env:
+  FLUTTER_VERSION: '3.24.3'
+  JAVA_VERSION: '17'
+
+jobs:
+  build:
+    name: Build ${{ github.event.inputs.build_type == 'debug' && 'Debug' || github.event.inputs.build_type == 'release' && 'Release' || 'Release & Debug' }} APK
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Java environment for Android builds
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: 'gradle'
+
+      # Set up Flutter SDK
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      # Verify Flutter installation
+      - name: Verify Flutter
+        run: |
+          flutter --version
+          flutter doctor -v
+
+      # Get dependencies
+      - name: Get dependencies
+        run: flutter pub get
+
+      # Run code analysis (optional, fails on errors)
+      - name: Analyze code
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+        continue-on-error: true
+
+      # Build Release APK
+      - name: Build Release APK
+        if: github.event.inputs.build_type != 'debug'
+        run: flutter build apk --release --shrink --obfuscate --split-debug-info=build/debug-info
+        env:
+          JAVA_HOME: ${{ setup-java.outputs.path }}
+
+      # Build Debug APK
+      - name: Build Debug APK
+        if: github.event.inputs.build_type != 'release'
+        run: flutter build apk --debug
+        env:
+          JAVA_HOME: ${{ setup-java.outputs.path }}
+
+      # Upload Release APK artifact
+      - name: Upload Release APK
+        if: success() && github.event.inputs.build_type != 'debug'
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/apk/release/app-release.apk
+          retention-days: 30
+          if-no-files-found: warn
+
+      # Upload Debug APK artifact
+      - name: Upload Debug APK
+        if: success() && github.event.inputs.build_type != 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk
+          path: |
+            build/app/outputs/flutter-apk/app-debug.apk
+            build/app/outputs/apk/debug/app-debug.apk
+          retention-days: 7
+          if-no-files-found: warn
+
+      # Upload debug symbols (for release builds)
+      - name: Upload Debug Symbols
+        if: success() && github.event.inputs.build_type == 'release' || github.event.inputs.build_type == 'all'
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-symbols
+          path: build/debug-info/
+          retention-days: 90
+          if-no-files-found: ignore
+
+  # Separate job for creating GitHub Release (only on tags)
+  create-release:
+    name: Create GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Download Release APK
+        uses: actions/download-artifact@v4
+        with:
+          name: release-apk
+          path: ./release/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./release/*.apk
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
