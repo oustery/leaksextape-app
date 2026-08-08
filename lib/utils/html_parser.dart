@@ -148,13 +148,13 @@ class HtmlParserUtil {
         
         // Look for flashvars pattern
         if (content.contains('flashvars') || content.contains('video_url') || content.contains('source')) {
-          // Try to extract video URL
+          // Try to extract video URL - use simple patterns without complex quotes
           final urlPatterns = [
-            RegExp('video_url[\'\"=:\\\s]+[\'"]([^\'"]+)[\'"]'),
-            RegExp('source[\'\"=:\\\s]+[\'"]([^\'"]+\\.mp4[^\'"]*)[\'"]'),
-            RegExp('file[\'\"=:\\\s]+[\'"]([^\'"]+)[\'"]'),
-            RegExp('v-acctoken=([^&"\s]+)', caseSensitive: false),
-            RegExp("'([^']*\\.mp4[^']*)'", caseSensitive: false),
+            RegExp(r'video_url[\s]*[=:][\s]*["\x27]([^\x22\x27]+)["\x27]'),
+            RegExp(r'source[\s]*[=:][\s]*["\x27]([^\x22\x27]+\.mp4[^\x22\x27]*)["\x27]'),
+            RegExp(r'file[\s]*[=:][\s]*["\x27]([^\x22\x27]+)["\x27]'),
+            RegExp(r'v-acctoken=([^&"\s]+)', caseSensitive: false),
+            RegExp(r"\x27([^\x27]*\.mp4[^\x27]*)\x27", caseSensitive: false),
           ];
 
           for (final pattern in urlPatterns) {
