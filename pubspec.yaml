@@ -21,6 +21,9 @@ dependencies:
   video_player: ^2.8.3
   chewie: ^1.7.1
   
+  # URL Launcher (for sharing/opening links)
+  url_launcher: ^6.2.1
+  
   # State Management
   provider: ^6.0.5
   

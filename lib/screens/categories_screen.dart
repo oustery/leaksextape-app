@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/category_model.dart';
+import '../models/category_model.dart' as app_models;
 import '../providers/video_provider.dart';
 import '../widgets/shimmer_loading.dart';
 import 'home_screen.dart';
@@ -63,10 +63,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> with TickerProvider
             return _buildEmptyState();
           }
 
-          final filteredCategories = _searchQuery.isEmpty
+          final List<app_models.Category> filteredCategories = _searchQuery.isEmpty
               ? provider.categories
               : provider.categories
-                  .where((cat) => cat.name.toLowerCase().contains(_searchQuery))
+                  .where((app_models.Category cat) => cat.name.toLowerCase().contains(_searchQuery))
                   .toList();
 
           if (provider.isLoading && filteredCategories.isEmpty) {
@@ -131,7 +131,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> with TickerProvider
 }
 
 class _CategoryCard extends StatelessWidget {
-  final Category category;
+  final app_models.Category category;
 
   const _CategoryCard({required this.category});
 

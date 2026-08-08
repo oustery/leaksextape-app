@@ -6,6 +6,7 @@ import '../utils/constants.dart';
 import '../widgets/video_card_widget.dart';
 import '../widgets/shimmer_loading.dart';
 import 'video_player_screen.dart';
+import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

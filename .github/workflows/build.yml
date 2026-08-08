@@ -2,27 +2,33 @@ name: Build APK
 
 on:
   push:
+    branches: [main, develop]
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
+env:
+  FLUTTER_VERSION: '3.19.6'
+
 jobs:
   build:
-    name: Build APK
+    name: Build Release & Debug APK
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
-          java-version: '17'
           distribution: 'temurin'
+          java-version: '17'
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0'
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
+          cache: true
 
       - name: Get dependencies
         run: flutter pub get
@@ -30,17 +36,21 @@ jobs:
       - name: Build Debug APK
         run: flutter build apk --debug
 
-      - name: Check build result
-        if: always()
-        run: |
-          echo "=== BUILD OUTPUT CHECK ==="
-          ls -la build/app/outputs/flutter-apk/ 2>/dev/null || echo "No output directory"
-          
-      - name: Upload APK Artifact
-        if: always()
+      - name: Build Release APK
+        run: flutter build apk --release
+
+      - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: leaksextape-debug-apk
+          path: build/app/outputs/flutter-apk/
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: leaksextape-release-apk
           path: build/app/outputs/flutter-apk/
           retention-days: 30
           if-no-files-found: warn

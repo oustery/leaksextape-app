@@ -188,9 +188,9 @@ class DatabaseService {
       limit: limit,
     );
     return results.map((map) => SearchHistoryItem(
-      id: map['id'].toString(),
-      query: map['query'],
-      searchedAt: DateTime.parse(map['searched_at']),
+      id: map['id']?.toString() ?? '',
+      query: map['query']?.toString() ?? '',
+      searchedAt: DateTime.parse(map['searched_at']?.toString() ?? DateTime.now().toIso8601String()),
     )).toList();
   }
 

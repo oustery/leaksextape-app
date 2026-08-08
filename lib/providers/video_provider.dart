@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../models/video_model.dart';
 import '../models/search_model.dart';
-import '../models/category_model.dart';
+import '../models/category_model.dart' as app_models;
 import '../services/api_service.dart';
 
 class VideoProvider with ChangeNotifier {
@@ -10,7 +10,7 @@ class VideoProvider with ChangeNotifier {
   // State
   List<VideoItem> _videos = [];
   List<VideoItem> _searchResults = [];
-  List<Category> _categories = [];
+  List<app_models.Category> _categories = [];
   bool _isLoading = false;
   bool _isLoadingMore = false;
   String? _errorMessage;
@@ -24,7 +24,7 @@ class VideoProvider with ChangeNotifier {
   // Getters
   List<VideoItem get videos => _videos;
   List<VideoItem> get searchResults => _searchResults;
-  List<Category> get categories => _categories;
+  List<app_models.Category> get categories => _categories;
   bool get isLoading => _isLoading;
   bool get isLoadingMore => _isLoadingMore;
   String? get errorMessage => _errorMessage;

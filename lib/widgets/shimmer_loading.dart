@@ -69,8 +69,7 @@ class AnimatedBuilder extends AnimatedWidget {
     super.key,
     required Animation<double> animation,
     required this.builder,
-    super.listenable: animation,
-  });
+  }) : super(listenable: animation);
 
   @override
   Widget build(BuildContext context) {
