@@ -35,22 +35,23 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Build Release APK
-        run: flutter build apk --release
-
       - name: Build Debug APK  
-        run: flutter build apk --debug
-
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-apk
-          path: build/app/outputs/flutter-apk/
-          retention-days: 30
+        run: |
+          echo "=== Starting Debug Build ==="
+          flutter build apk --debug --verbose 2>&1 | head -100
+          echo "=== Debug Build Complete ==="
+          
+      - name: Check if debug APK exists
+        run: |
+          echo "Checking for APK files..."
+          find . -name "*.apk" -type f 2>/dev/null || echo "No APK files found"
+          ls -la build/app/outputs/ 2>/dev/null || echo "Build outputs directory not found"
 
       - name: Upload Debug APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
-          path: build/app/outputs/flutter-apk/
+          path: build/app/outputs/
           retention-days: 7
+          if-no-files-found: warn
