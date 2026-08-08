@@ -12,7 +12,7 @@ env:
 
 jobs:
   build:
-    name: Build APK
+    name: Build Release & Debug APK
     runs-on: ubuntu-latest
     
     steps:
@@ -36,22 +36,34 @@ jobs:
         run: flutter pub get
 
       - name: Build Debug APK  
+        run: flutter build apk --debug
+
+      - name: Build Release APK
+        run: flutter build apk --release
+
+      - name: List build outputs
         run: |
-          echo "=== Starting Debug Build ==="
-          flutter build apk --debug --verbose 2>&1 | head -100
-          echo "=== Debug Build Complete ==="
-          
-      - name: Check if debug APK exists
-        run: |
-          echo "Checking for APK files..."
-          find . -name "*.apk" -type f 2>/dev/null || echo "No APK files found"
-          ls -la build/app/outputs/ 2>/dev/null || echo "Build outputs directory not found"
+          echo "=== Build Outputs ==="
+          find . -name "*.apk" -type f 2>/dev/null
+          echo "=== Directory Structure ==="
+          ls -laR build/app/outputs/ 2>/dev/null || echo "No outputs directory"
 
       - name: Upload Debug APK
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
-          path: build/app/outputs/
+          path: |
+            build/app/outputs/flutter-apk/app-debug.apk
+            build/app/outputs/apk/debug/*.apk
           retention-days: 7
+          if-no-files-found: warn
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/apk/release/*.apk
+          retention-days: 30
           if-no-files-found: warn
