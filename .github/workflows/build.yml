@@ -3,27 +3,12 @@ name: Build APK
 on:
   push:
     branches: [main, develop]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.gitignore'
   pull_request:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      build_type:
-        description: 'Build type'
-        required: true
-        default: 'all'
-        type: choice
-        options:
-          - all
-          - release
-          - debug
 
 env:
   FLUTTER_VERSION: '3.24.3'
-  JAVA_VERSION: '17'
 
 jobs:
   build:
@@ -31,19 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up Java environment for Android builds
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
-          cache: 'gradle'
+          java-version: '17'
 
-      # Set up Flutter SDK
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -51,98 +32,25 @@ jobs:
           channel: 'stable'
           cache: true
 
-      # Verify Flutter installation
-      - name: Verify Flutter
-        run: |
-          flutter --version
-          flutter doctor -v
-
-      # Accept Android licenses
-      - name: Accept Android licenses
-        run: |
-          yes | sdkmanager --licenses || true
-
-      # Get dependencies
       - name: Get dependencies
         run: flutter pub get
 
-      # Run code analysis (optional, fails on errors)
-      - name: Analyze code
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
-        continue-on-error: true
-
-      # Build Release APK
       - name: Build Release APK
-        if: github.event.inputs.build_type != 'debug'
-        run: |
-          echo "Building Release APK..."
-          flutter build apk --release --shrink --obfuscate --split-debug-info=build/debug-info
-          echo "Build completed!"
-          ls -la build/app/outputs/flutter-apk/ || ls -la build/app/outputs/apk/release/ || echo "APK not found in expected location"
+        run: flutter build apk --release
 
-      # Build Debug APK
-      - name: Build Debug APK
-        if: github.event.inputs.build_type != 'release'
-        run: |
-          echo "Building Debug APK..."
-          flutter build apk --debug
-          echo "Debug build completed!"
-          ls -la build/app/outputs/flutter-apk/ || ls -la build/app/outputs/apk/debug/ || echo "Debug APK not found"
+      - name: Build Debug APK  
+        run: flutter build apk --debug
 
-      # Upload Release APK artifact
       - name: Upload Release APK
-        if: success() && github.event.inputs.build_type != 'debug'
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: |
-            build/app/outputs/flutter-apk/
-            build/app/outputs/apk/
+          path: build/app/outputs/flutter-apk/
           retention-days: 30
-          if-no-files-found: warn
 
-      # Upload Debug APK artifact
       - name: Upload Debug APK
-        if: success() && github.event.inputs.build_type != 'release'
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
-          path: |
-            build/app/outputs/flutter-apk/
-            build/app/outputs/apk/
+          path: build/app/outputs/flutter-apk/
           retention-days: 7
-          if-no-files-found: warn
-
-      # Upload debug symbols (for release builds)
-      - name: Upload Debug Symbols
-        if: success() && (github.event.inputs.build_type == 'release' || github.event.inputs.build_type == 'all')
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug-symbols
-          path: build/debug-info/
-          retention-days: 90
-          if-no-files-found: ignore
-
-  # Separate job for creating GitHub Release (only on tags)
-  create-release:
-    name: Create GitHub Release
-    needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    
-    steps:
-      - name: Download Release APK
-        uses: actions/download-artifact@v4
-        with:
-          name: release-apk
-          path: ./release/
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ./release/*.apk
-          generate_release_notes: true
-          draft: false
-          prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
