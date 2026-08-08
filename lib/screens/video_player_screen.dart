@@ -323,7 +323,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       children: widget.video!.tags.take(6).map((tag) {
                         return Chip(
                           label: Text(tag, style: const TextStyle(fontSize: 12)),
-                          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                          backgroundColor: Theme.of(context).colorScheme.surface,
                         );
                       }).toList(),
                     ),

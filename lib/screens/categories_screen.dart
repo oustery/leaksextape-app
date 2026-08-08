@@ -47,7 +47,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> with TickerProvider
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                fillColor: Theme.of(context).colorScheme.surface.withOpacity(0.5),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               ),
               onChanged: (value) {

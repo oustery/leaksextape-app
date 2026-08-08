@@ -98,8 +98,8 @@ class HtmlParserUtil {
     double rating = 0.0;
     final ratingEl = element.querySelector('.rating, .stars, [class*="rating"], [class*="percent"]');
     if (ratingEl != null) {
-      final ratingText = ratingText = ratingEl.text.replaceAll('%', '').trim();
-      rating = double.tryParse(ratingText) ?? 0.0;
+      final ratingTextStr = ratingEl.text.replaceAll('%', '').trim();
+      rating = double.tryParse(ratingTextStr) ?? 0.0;
     }
 
     if (id == null || id.isEmpty || title.isEmpty) return null;
@@ -150,10 +150,10 @@ class HtmlParserUtil {
         if (content.contains('flashvars') || content.contains('video_url') || content.contains('source')) {
           // Try to extract video URL
           final urlPatterns = [
-            RegExp(r"video_url['\":\s]+['\"]([^'\"]+)['\"]"),
-            RegExp(r"source['\":\s]+['\"]([^'\"]+\.mp4[^'\"]*)['\"]"),
-            RegExp(r"file['\":\s]+['\"]([^'\"]+)['\"]"),
-            RegExp(r"v-acctoken=([^&\"\s']+)", caseSensitive: false),
+            RegExp(r"video_url['\"=:\\s]+['\"]([^'\"]+)['\"]"),
+            RegExp(r"source['\"=:\\s]+['\"]([^'\"]+\.mp4[^'\"]*)['\"]"),
+            RegExp(r"file['\"=:\\s]+['\"]([^'\"]+)['\"]"),
+            RegExp(r'v-acctoken=([^&"\s']+)', caseSensitive: false),
             RegExp(r"'([^']*\.mp4[^']*)'", caseSensitive: false),
           ];
 
