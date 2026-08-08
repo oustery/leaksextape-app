@@ -27,7 +27,7 @@ env:
 
 jobs:
   build:
-    name: Build ${{ github.event.inputs.build_type == 'debug' && 'Debug' || github.event.inputs.build_type == 'release' && 'Release' || 'Release & Debug' }} APK
+    name: Build APK
     runs-on: ubuntu-latest
     
     steps:
@@ -70,15 +70,11 @@ jobs:
       - name: Build Release APK
         if: github.event.inputs.build_type != 'debug'
         run: flutter build apk --release --shrink --obfuscate --split-debug-info=build/debug-info
-        env:
-          JAVA_HOME: ${{ setup-java.outputs.path }}
 
       # Build Debug APK
       - name: Build Debug APK
         if: github.event.inputs.build_type != 'release'
         run: flutter build apk --debug
-        env:
-          JAVA_HOME: ${{ setup-java.outputs.path }}
 
       # Upload Release APK artifact
       - name: Upload Release APK
@@ -106,7 +102,7 @@ jobs:
 
       # Upload debug symbols (for release builds)
       - name: Upload Debug Symbols
-        if: success() && github.event.inputs.build_type == 'release' || github.event.inputs.build_type == 'all'
+        if: success() && (github.event.inputs.build_type == 'release' || github.event.inputs.build_type == 'all')
         uses: actions/upload-artifact@v4
         with:
           name: debug-symbols
