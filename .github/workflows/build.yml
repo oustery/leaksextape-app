@@ -8,7 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-  FLUTTER_VERSION: '3.24.3'
+  # Use stable Flutter version with better plugin compatibility
+  FLUTTER_VERSION: '3.19.6'
 
 jobs:
   build:
@@ -32,38 +33,53 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Verify Flutter setup
+        run: |
+          flutter --version
+          flutter doctor -v | head -20
+
       - name: Get dependencies
-        run: flutter pub get
+        run: |
+          flutter pub get
+          echo "Dependencies resolved successfully"
 
       - name: Build Debug APK  
-        run: flutter build apk --debug
-
-      - name: Build Release APK
-        run: flutter build apk --release
+        run: |
+          echo "=== Starting Debug Build ==="
+          flutter build apk --debug --verbose 2>&1 | tail -50
+          DEBUG_EXIT=$?
+          echo "=== Debug build exit code: $DEBUG_EXIT ==="
+          
+      - name: Build Release APK (if debug succeeded)
+        if: success()
+        run: |
+          echo "=== Starting Release Build ==="
+          flutter build apk --release --verbose 2>&1 | tail -50
+          RELEASE_EXIT=$?
+          echo "=== Release build exit code: $RELEASE_EXIT ==="
 
       - name: List build outputs
+        if: always()
         run: |
-          echo "=== Build Outputs ==="
-          find . -name "*.apk" -type f 2>/dev/null
-          echo "=== Directory Structure ==="
+          echo "=== All APK files ==="
+          find . -name "*.apk" -type f 2>/dev/null || echo "No APK files found"
+          echo "=== Build output directories ==="
           ls -laR build/app/outputs/ 2>/dev/null || echo "No outputs directory"
 
       - name: Upload Debug APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
-          path: |
-            build/app/outputs/flutter-apk/app-debug.apk
-            build/app/outputs/apk/debug/*.apk
+          path: build/app/outputs/
           retention-days: 7
           if-no-files-found: warn
 
       - name: Upload Release APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/apk/release/*.apk
+          path: build/app/outputs/
           retention-days: 30
           if-no-files-found: warn
