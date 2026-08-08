@@ -4,8 +4,8 @@ import 'package:html/parser.dart' as html_parser;
 import '../models/video_model.dart';
 import '../models/category_model.dart';
 import '../models/search_model.dart';
-import 'html_parser.dart';
-import 'constants.dart';
+import '../utils/html_parser.dart';
+import '../utils/constants.dart';
 import 'cache_manager.dart';
 
 class LeakSexTapeService {

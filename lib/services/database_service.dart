@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/video_model.dart';
 import '../models/search_model.dart';
-import 'constants.dart';
+import '../utils/constants.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
