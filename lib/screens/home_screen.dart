@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/video_model.dart';
 import '../providers/video_provider.dart';
+import '../utils/constants.dart';
 import '../widgets/video_card_widget.dart';
 import '../widgets/shimmer_loading.dart';
 import 'video_player_screen.dart';
@@ -176,9 +177,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
-
-// Import for AppConstants
-class AppConstants {
-  static const String appName = 'LeakSexTape';
 }
