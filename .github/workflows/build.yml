@@ -17,7 +17,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
 
       - uses: subosito/flutter-action@v2
         with:
@@ -28,23 +27,16 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Analyze code
-        run: flutter analyze
-        continue-on-error: true
-
       - name: Build APK
         run: flutter build apk --debug
 
-      - name: Check outputs
-        run: |
-          echo "=== Checking for APK files ==="
-          find . -name "*.apk" -type f 2>/dev/null || echo "No APKs found"
-          
       - name: Upload APK
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: leaksextape-apk
           path: |
             build/app/outputs/flutter-apk/
             build/app/outputs/apk/
           retention-days: 30
+          if-no-files-found: warn
