@@ -39,9 +39,10 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^3.0.1
 
-# Force compatible versions for all transitive dependencies
+# Force compatible versions for ALL transitive dependencies with build issues
 dependency_overrides:
   package_info_plus: ^8.0.2
+  wakelock_plus: ^1.2.0
 
 flutter:
   uses-material-design: true
