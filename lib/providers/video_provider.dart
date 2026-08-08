@@ -8,9 +8,9 @@ class VideoProvider with ChangeNotifier {
   final LeakSexTapeService _api = LeakSexTapeService();
 
   // State
-  List<VideoItem> _videos = [];
-  List<VideoItem> _searchResults = [];
-  List<app_models.Category> _categories = [];
+  final List<VideoItem> _videos = [];
+  final List<VideoItem> _searchResults = [];
+  final List<app_models.Category> _categories = [];
   bool _isLoading = false;
   bool _isLoadingMore = false;
   String? _errorMessage;
@@ -21,10 +21,19 @@ class VideoProvider with ChangeNotifier {
   SearchParams? _currentSearchParams;
   int _totalSearchResults = 0;
 
-  // Getters
-  List<VideoItem get videos => _videos;
-  List<VideoItem> get searchResults => _searchResults;
-  List<app_models.Category> get categories => _categories;
+  // Getters - use var return type to avoid parser issues
+  List<VideoItem> get videos {
+    return _videos;
+  }
+  
+  List<VideoItem> get searchResults {
+    return _searchResults;
+  }
+  
+  List<app_models.Category> get categories {
+    return _categories;
+  }
+  
   bool get isLoading => _isLoading;
   bool get isLoadingMore => _isLoadingMore;
   String? get errorMessage => _errorMessage;
@@ -55,9 +64,10 @@ class VideoProvider with ChangeNotifier {
       final response = await _api.getLatestVideos(page: _currentPage);
       
       if (refresh || _currentPage == 1) {
-        _videos = response.videos;
+        _videos.clear();
+        _videos.addAll(response.videos);
       } else {
-        _videos = [..._videos, ...response.videos];
+        _videos.addAll(response.videos);
       }
       
       _hasMorePages = response.hasMore;
@@ -80,7 +90,7 @@ class VideoProvider with ChangeNotifier {
 
     try {
       final response = await _api.getLatestVideos(page: _currentPage);
-      _videos = [..._videos, ...response.videos];
+      _videos.addAll(response.videos);
       _hasMorePages = response.hasMore;
       _currentPage++;
       
@@ -101,13 +111,14 @@ class VideoProvider with ChangeNotifier {
 
     try {
       final result = await _api.searchVideos(params);
-      _searchResults = result.videos;
+      _searchResults.clear();
+      _searchResults.addAll(result.videos);
       _totalSearchResults = result.totalResults;
       
       notifyListeners();
     } catch (e) {
       _setError(e.toString().replaceFirst('Exception: ', ''));
-      _searchResults = [];
+      _searchResults.clear();
     } finally {
       _setLoading(false);
     }
@@ -123,7 +134,7 @@ class VideoProvider with ChangeNotifier {
     try {
       final newParams = _currentSearchParams!.copyWith(page: _currentSearchParams!.page + 1);
       final result = await _api.searchVideos(newParams);
-      _searchResults = [..._searchResults, ...result.videos];
+      _searchResults.addAll(result.videos);
       _currentSearchParams = newParams;
       
       notifyListeners();
@@ -137,7 +148,7 @@ class VideoProvider with ChangeNotifier {
 
   // Clear search results
   void clearSearch() {
-    _searchResults = [];
+    _searchResults.clear();
     _currentSearchParams = null;
     _totalSearchResults = 0;
     notifyListeners();
@@ -148,7 +159,9 @@ class VideoProvider with ChangeNotifier {
     if (_categories.isNotEmpty) return;
 
     try {
-      _categories = await _api.getCategories();
+      final cats = await _api.getCategories();
+      _categories.clear();
+      _categories.addAll(cats);
       notifyListeners();
     } catch (e) {
       debugPrint('Load categories error: $e');

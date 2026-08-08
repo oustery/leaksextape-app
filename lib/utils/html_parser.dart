@@ -150,11 +150,11 @@ class HtmlParserUtil {
         if (content.contains('flashvars') || content.contains('video_url') || content.contains('source')) {
           // Try to extract video URL
           final urlPatterns = [
-            RegExp(r"video_url['\"=:\\s]+['\"]([^'\"]+)['\"]"),
-            RegExp(r"source['\"=:\\s]+['\"]([^'\"]+\.mp4[^'\"]*)['\"]"),
-            RegExp(r"file['\"=:\\s]+['\"]([^'\"]+)['\"]"),
-            RegExp(r'v-acctoken=([^&"\s']+)', caseSensitive: false),
-            RegExp(r"'([^']*\.mp4[^']*)'", caseSensitive: false),
+            RegExp('video_url[\'\"=:\\\s]+[\'"]([^\'"]+)[\'"]'),
+            RegExp('source[\'\"=:\\\s]+[\'"]([^\'"]+\\.mp4[^\'"]*)[\'"]'),
+            RegExp('file[\'\"=:\\\s]+[\'"]([^\'"]+)[\'"]'),
+            RegExp('v-acctoken=([^&"\s]+)', caseSensitive: false),
+            RegExp("'([^']*\\.mp4[^']*)'", caseSensitive: false),
           ];
 
           for (final pattern in urlPatterns) {
