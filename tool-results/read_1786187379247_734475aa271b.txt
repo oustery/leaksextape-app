@@ -1,0 +1,622 @@
+     1→2026-08-08T11:00:32.1542870Z Current runner version: '2.336.0'
+     2→2026-08-08T11:00:32.1560111Z ##[group]Runner Image Provisioner
+     3→2026-08-08T11:00:32.1560717Z Hosted Compute Agent
+     4→2026-08-08T11:00:32.1561143Z Version: 20260707.563
+     5→2026-08-08T11:00:32.1561564Z Commit: 02667638d2b423fbc733a8e32a88b44996a3ba6e
+     6→2026-08-08T11:00:32.1562050Z Build Date: 2026-07-07T19:33:50Z
+     7→2026-08-08T11:00:32.1562523Z Worker ID: {fe090030-f267-4a7d-a926-718ee106a1d6}
+     8→2026-08-08T11:00:32.1562992Z Azure Region: centralus
+     9→2026-08-08T11:00:32.1563560Z ##[endgroup]
+    10→2026-08-08T11:00:32.1564483Z ##[group]Operating System
+    11→2026-08-08T11:00:32.1564914Z Ubuntu
+    12→2026-08-08T11:00:32.1565568Z 24.04.4
+    13→2026-08-08T11:00:32.1565923Z LTS
+    14→2026-08-08T11:00:32.1566258Z ##[endgroup]
+    15→2026-08-08T11:00:32.1566639Z ##[group]Runner Image
+    16→2026-08-08T11:00:32.1567058Z Image: ubuntu-24.04
+    17→2026-08-08T11:00:32.1567431Z Version: 20260720.247.2
+    18→2026-08-08T11:00:32.1568298Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260720.247/images/ubuntu/Ubuntu2404-Readme.md
+    19→2026-08-08T11:00:32.1569402Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260720.247
+    20→2026-08-08T11:00:32.1570057Z ##[endgroup]
+    21→2026-08-08T11:00:32.1570866Z ##[group]GITHUB_TOKEN Permissions
+    22→2026-08-08T11:00:32.1572520Z Contents: read
+    23→2026-08-08T11:00:32.1572891Z Metadata: read
+    24→2026-08-08T11:00:32.1573533Z Packages: read
+    25→2026-08-08T11:00:32.1573985Z ##[endgroup]
+    26→2026-08-08T11:00:32.1575484Z Secret source: Actions
+    27→2026-08-08T11:00:32.1576372Z Prepare workflow directory
+    28→2026-08-08T11:00:32.1851471Z Prepare all required actions
+    29→2026-08-08T11:00:32.1886849Z Getting action download info
+    30→2026-08-08T11:00:32.4166439Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+    31→2026-08-08T11:00:33.1663921Z Download action repository 'actions/setup-java@v4' (SHA:cf277c60eb25467037889841efdb72551f06f6c3)
+    32→2026-08-08T11:00:33.7341857Z Download action repository 'subosito/flutter-action@v2' (SHA:1a449444c387b1966244ae4d4f8c696479add0b2)
+    33→2026-08-08T11:00:33.9711104Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+    34→2026-08-08T11:00:34.2384767Z Getting action download info
+    35→2026-08-08T11:00:34.3379940Z Download action repository 'actions/cache@v5' (SHA:caa296126883cff596d87d8935842f9db880ef25)
+    36→2026-08-08T11:00:34.5752893Z Complete job name: Build Release & Debug APK
+    37→2026-08-08T11:00:34.6211133Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+    38→2026-08-08T11:00:34.6216893Z ##[group]Run actions/checkout@v4
+    39→2026-08-08T11:00:34.6217286Z with:
+    40→2026-08-08T11:00:34.6217557Z   repository: oustery/leaksextape-app
+    41→2026-08-08T11:00:34.6219589Z   token: ***
+    42→2026-08-08T11:00:34.6219866Z   ssh-strict: true
+    43→2026-08-08T11:00:34.6220125Z   ssh-user: git
+    44→2026-08-08T11:00:34.6220382Z   persist-credentials: true
+    45→2026-08-08T11:00:34.6220732Z   clean: true
+    46→2026-08-08T11:00:34.6220992Z   sparse-checkout-cone-mode: true
+    47→2026-08-08T11:00:34.6221283Z   fetch-depth: 1
+    48→2026-08-08T11:00:34.6221537Z   fetch-tags: false
+    49→2026-08-08T11:00:34.6221784Z   show-progress: true
+    50→2026-08-08T11:00:34.6222042Z   lfs: false
+    51→2026-08-08T11:00:34.6222381Z   submodules: false
+    52→2026-08-08T11:00:34.6222664Z   set-safe-directory: true
+    53→2026-08-08T11:00:34.6222945Z   allow-unsafe-pr-checkout: false
+    54→2026-08-08T11:00:34.6223447Z env:
+    55→2026-08-08T11:00:34.6223729Z   FLUTTER_VERSION: 3.19.6
+    56→2026-08-08T11:00:34.6223980Z ##[endgroup]
+    57→2026-08-08T11:00:34.6949300Z Syncing repository: oustery/leaksextape-app
+    58→2026-08-08T11:00:34.6951379Z ##[group]Getting Git version info
+    59→2026-08-08T11:00:34.6952086Z Working directory is '/home/runner/work/leaksextape-app/leaksextape-app'
+    60→2026-08-08T11:00:34.6952956Z [command]/usr/bin/git version
+    61→2026-08-08T11:00:34.7438481Z git version 2.54.0
+    62→2026-08-08T11:00:34.7483473Z ##[endgroup]
+    63→2026-08-08T11:00:34.7493867Z Temporarily overriding HOME='/home/runner/work/_temp/946a9969-0321-4556-b3a2-bd24b7bcd3c7' before making global git config changes
+    64→2026-08-08T11:00:34.7494537Z Adding repository directory to the temporary git global config as a safe directory
+    65→2026-08-08T11:00:34.7497388Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/leaksextape-app/leaksextape-app
+    66→2026-08-08T11:00:34.7524294Z Deleting the contents of '/home/runner/work/leaksextape-app/leaksextape-app'
+    67→2026-08-08T11:00:34.7527446Z ##[group]Initializing the repository
+    68→2026-08-08T11:00:34.7530216Z [command]/usr/bin/git init /home/runner/work/leaksextape-app/leaksextape-app
+    69→2026-08-08T11:00:34.7936116Z hint: Using 'master' as the name for the initial branch. This default branch name
+    70→2026-08-08T11:00:34.7936999Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+    71→2026-08-08T11:00:34.7937655Z hint: to use in all of your new repositories, which will suppress this warning,
+    72→2026-08-08T11:00:34.7938189Z hint: call:
+    73→2026-08-08T11:00:34.7938498Z hint:
+    74→2026-08-08T11:00:34.7938879Z hint:      git config --global init.defaultBranch <name>
+    75→2026-08-08T11:00:34.7939325Z hint:
+    76→2026-08-08T11:00:34.7939730Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+    77→2026-08-08T11:00:34.7940357Z hint: 'development'. The just-created branch can be renamed via this command:
+    78→2026-08-08T11:00:34.7940907Z hint:
+    79→2026-08-08T11:00:34.7941234Z hint:      git branch -m <name>
+    80→2026-08-08T11:00:34.7941585Z hint:
+    81→2026-08-08T11:00:34.7942020Z hint: Disable this message with "git config set advice.defaultBranchName false"
+    82→2026-08-08T11:00:34.7942721Z Initialized empty Git repository in /home/runner/work/leaksextape-app/leaksextape-app/.git/
+    83→2026-08-08T11:00:34.7946910Z [command]/usr/bin/git remote add origin https://github.com/oustery/leaksextape-app
+    84→2026-08-08T11:00:34.7980147Z ##[endgroup]
+    85→2026-08-08T11:00:34.7980853Z ##[group]Disabling automatic garbage collection
+    86→2026-08-08T11:00:34.7983997Z [command]/usr/bin/git config --local gc.auto 0
+    87→2026-08-08T11:00:34.8004819Z ##[endgroup]
+    88→2026-08-08T11:00:34.8005552Z ##[group]Setting up auth
+    89→2026-08-08T11:00:34.8010024Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+    90→2026-08-08T11:00:34.8032188Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+    91→2026-08-08T11:00:34.9167139Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+    92→2026-08-08T11:00:34.9189715Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+    93→2026-08-08T11:00:34.9333744Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+    94→2026-08-08T11:00:34.9357040Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+    95→2026-08-08T11:00:34.9499137Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+    96→2026-08-08T11:00:34.9522936Z ##[endgroup]
+    97→2026-08-08T11:00:34.9523689Z ##[group]Fetching the repository
+    98→2026-08-08T11:00:34.9529730Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +c36a1a7cbc2d3b01f6b5a419819d2e05f55048c2:refs/remotes/origin/main
+    99→2026-08-08T11:00:36.3951767Z From https://github.com/oustery/leaksextape-app
+   100→2026-08-08T11:00:36.3952785Z  * [new ref]         c36a1a7cbc2d3b01f6b5a419819d2e05f55048c2 -> origin/main
+   101→2026-08-08T11:00:36.3972119Z ##[endgroup]
+   102→2026-08-08T11:00:36.3972862Z ##[group]Determining the checkout info
+   103→2026-08-08T11:00:36.3974031Z ##[endgroup]
+   104→2026-08-08T11:00:36.3980704Z [command]/usr/bin/git sparse-checkout disable
+   105→2026-08-08T11:00:36.4014584Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+   106→2026-08-08T11:00:36.4037879Z ##[group]Checking out the ref
+   107→2026-08-08T11:00:36.4041994Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+   108→2026-08-08T11:00:36.6920967Z Switched to a new branch 'main'
+   109→2026-08-08T11:00:36.6921843Z branch 'main' set up to track 'origin/main'.
+   110→2026-08-08T11:00:36.6930376Z ##[endgroup]
+   111→2026-08-08T11:00:36.6964363Z [command]/usr/bin/git log -1 --format=%H
+   112→2026-08-08T11:00:36.6982467Z c36a1a7cbc2d3b01f6b5a419819d2e05f55048c2
+   113→2026-08-08T11:00:36.7196299Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+   114→2026-08-08T11:00:36.7197453Z ##[group]Run actions/setup-java@v4
+   115→2026-08-08T11:00:36.7197792Z with:
+   116→2026-08-08T11:00:36.7198010Z   distribution: temurin
+   117→2026-08-08T11:00:36.7198261Z   java-version: 17
+   118→2026-08-08T11:00:36.7198500Z   java-package: jdk
+   119→2026-08-08T11:00:36.7198754Z   check-latest: false
+   120→2026-08-08T11:00:36.7198997Z   server-id: github
+   121→2026-08-08T11:00:36.7199239Z   server-username: GITHUB_ACTOR
+   122→2026-08-08T11:00:36.7199478Z   server-password: GITHUB_TOKEN
+   123→2026-08-08T11:00:36.7199749Z   overwrite-settings: true
+   124→2026-08-08T11:00:36.7200003Z   job-status: success
+   125→2026-08-08T11:00:36.7201921Z   token: ***
+   126→2026-08-08T11:00:36.7202152Z env:
+   127→2026-08-08T11:00:36.7202588Z   FLUTTER_VERSION: 3.19.6
+   128→2026-08-08T11:00:36.7202865Z ##[endgroup]
+   129→2026-08-08T11:00:36.8408758Z ##[warning]setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
+   130→2026-08-08T11:00:36.8414470Z ##[group]Installed distributions
+   131→2026-08-08T11:00:36.8623017Z Resolved Java 17.0.19+10 from tool-cache
+   132→2026-08-08T11:00:36.8623603Z Setting Java 17.0.19+10 as the default
+   133→2026-08-08T11:00:36.8629909Z (node:2124) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+   134→2026-08-08T11:00:36.8630628Z (Use `node --trace-deprecation ...` to show where the warning was created)
+   135→2026-08-08T11:00:36.8632127Z Creating toolchains.xml for JDK version 17 from temurin
+   136→2026-08-08T11:00:36.8679934Z Writing to /home/runner/.m2/toolchains.xml
+   137→2026-08-08T11:00:36.8680269Z 
+   138→2026-08-08T11:00:36.8681577Z Java configuration:
+   139→2026-08-08T11:00:36.8681972Z   Distribution: temurin
+   140→2026-08-08T11:00:36.8682368Z   Version: 17.0.19+10
+   141→2026-08-08T11:00:36.8682843Z   Path: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   142→2026-08-08T11:00:36.8683134Z 
+   143→2026-08-08T11:00:36.8683703Z ##[endgroup]
+   144→2026-08-08T11:00:36.8700045Z Creating settings.xml with server-id: github
+   145→2026-08-08T11:00:36.8725678Z Writing to /home/runner/.m2/settings.xml
+   146→2026-08-08T11:00:36.8956134Z ##[group]Run subosito/flutter-action@v2
+   147→2026-08-08T11:00:36.8956445Z with:
+   148→2026-08-08T11:00:36.8956712Z   flutter-version: 3.19.6
+   149→2026-08-08T11:00:36.8956976Z   channel: stable
+   150→2026-08-08T11:00:36.8957218Z   cache: true
+   151→2026-08-08T11:00:36.8957428Z   architecture: X64
+   152→2026-08-08T11:00:36.8957692Z   pub-cache-path: default
+   153→2026-08-08T11:00:36.8957951Z   dry-run: false
+   154→2026-08-08T11:00:36.8958213Z   git-source: https://github.com/flutter/flutter.git
+   155→2026-08-08T11:00:36.8958510Z env:
+   156→2026-08-08T11:00:36.8958799Z   FLUTTER_VERSION: 3.19.6
+   157→2026-08-08T11:00:36.8959296Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   158→2026-08-08T11:00:36.8959945Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   159→2026-08-08T11:00:36.8960462Z ##[endgroup]
+   160→2026-08-08T11:00:36.9027180Z ##[start-action display=Make yq tool available on Windows runners;id=__subosito_flutter-action.__run]
+   161→2026-08-08T11:00:36.9035594Z ##[end-action id=__subosito_flutter-action.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+   162→2026-08-08T11:00:36.9037522Z ##[start-action display=Make setup script executable;id=__subosito_flutter-action.__run_2]
+   163→2026-08-08T11:00:36.9067723Z ##[group]Run chmod +x "$GITHUB_ACTION_PATH/setup.sh"
+   164→2026-08-08T11:00:36.9068320Z [36;1mchmod +x "$GITHUB_ACTION_PATH/setup.sh"[0m
+   165→2026-08-08T11:00:36.9097036Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+   166→2026-08-08T11:00:36.9097410Z env:
+   167→2026-08-08T11:00:36.9097639Z   FLUTTER_VERSION: 3.19.6
+   168→2026-08-08T11:00:36.9097953Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   169→2026-08-08T11:00:36.9098368Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   170→2026-08-08T11:00:36.9098711Z ##[endgroup]
+   171→2026-08-08T11:00:36.9300361Z ##[end-action id=__subosito_flutter-action.__run_2;outcome=success;conclusion=success;duration_ms=26]
+   172→2026-08-08T11:00:36.9302383Z ##[start-action display=Set action inputs;id=__subosito_flutter-action.flutter-action]
+   173→2026-08-08T11:00:36.9332074Z ##[group]Run $GITHUB_ACTION_PATH/setup.sh -p \
+   174→2026-08-08T11:00:36.9332421Z [36;1m$GITHUB_ACTION_PATH/setup.sh -p \[0m
+   175→2026-08-08T11:00:36.9332699Z [36;1m  -n '3.19.6' \[0m
+   176→2026-08-08T11:00:36.9332927Z [36;1m  -f '' \[0m
+   177→2026-08-08T11:00:36.9333121Z [36;1m  -a 'X64' \[0m
+   178→2026-08-08T11:00:36.9333588Z [36;1m  -k '' \[0m
+   179→2026-08-08T11:00:36.9333822Z [36;1m  -c '' \[0m
+   180→2026-08-08T11:00:36.9334022Z [36;1m  -l '' \[0m
+   181→2026-08-08T11:00:36.9334238Z [36;1m  -d 'default' \[0m
+   182→2026-08-08T11:00:36.9334515Z [36;1m  -g 'https://github.com/flutter/flutter.git' \[0m
+   183→2026-08-08T11:00:36.9334806Z [36;1m  stable[0m
+   184→2026-08-08T11:00:36.9354865Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+   185→2026-08-08T11:00:36.9355216Z env:
+   186→2026-08-08T11:00:36.9355430Z   FLUTTER_VERSION: 3.19.6
+   187→2026-08-08T11:00:36.9355776Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   188→2026-08-08T11:00:36.9356187Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   189→2026-08-08T11:00:36.9356499Z ##[endgroup]
+   190→2026-08-08T11:00:37.1816865Z ##[end-action id=__subosito_flutter-action.flutter-action;outcome=success;conclusion=success;duration_ms=251]
+   191→2026-08-08T11:00:37.1820956Z ##[start-action display=Cache Flutter;id=__subosito_flutter-action.cache-flutter]
+   192→2026-08-08T11:00:37.1856958Z ##[group]Run actions/cache@v5
+   193→2026-08-08T11:00:37.1857220Z with:
+   194→2026-08-08T11:00:37.1857476Z   path: /opt/hostedtoolcache/flutter/stable-3.19.6-x64
+   195→2026-08-08T11:00:37.1857891Z   key: flutter-linux-stable-3.19.6-x64-54e66469a933b60ddf175f858f82eaeb97e48c8d
+   196→2026-08-08T11:00:37.1858281Z   enableCrossOsArchive: false
+   197→2026-08-08T11:00:37.1858531Z   fail-on-cache-miss: false
+   198→2026-08-08T11:00:37.1858796Z   lookup-only: false
+   199→2026-08-08T11:00:37.1859021Z   save-always: false
+   200→2026-08-08T11:00:37.1859235Z env:
+   201→2026-08-08T11:00:37.1859466Z   FLUTTER_VERSION: 3.19.6
+   202→2026-08-08T11:00:37.1859783Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   203→2026-08-08T11:00:37.1860332Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   204→2026-08-08T11:00:37.1860666Z ##[endgroup]
+   205→2026-08-08T11:00:37.4964026Z Cache hit for: flutter-linux-stable-3.19.6-x64-54e66469a933b60ddf175f858f82eaeb97e48c8d
+   206→2026-08-08T11:00:38.6898877Z Received 104857600 of 799100461 (13.1%), 100.0 MBs/sec
+   207→2026-08-08T11:00:39.6967004Z Received 268435456 of 799100461 (33.6%), 127.6 MBs/sec
+   208→2026-08-08T11:00:40.7007546Z Received 436207616 of 799100461 (54.6%), 138.3 MBs/sec
+   209→2026-08-08T11:00:41.6985659Z Received 624951296 of 799100461 (78.2%), 148.7 MBs/sec
+   210→2026-08-08T11:00:42.7024748Z Received 780140544 of 799100461 (97.6%), 148.5 MBs/sec
+   211→2026-08-08T11:00:43.1033961Z Received 799100461 of 799100461 (100.0%), 140.8 MBs/sec
+   212→2026-08-08T11:00:43.1034617Z Cache Size: ~762 MB (799100461 B)
+   213→2026-08-08T11:00:43.1085935Z [command]/usr/bin/tar -xf /home/runner/work/_temp/d938e186-1e25-46c4-a191-8ff503ae83ca/cache.tzst -P -C /home/runner/work/leaksextape-app/leaksextape-app --use-compress-program unzstd
+   214→2026-08-08T11:00:45.9608182Z Cache restored successfully
+   215→2026-08-08T11:00:45.9912202Z Cache restored from key: flutter-linux-stable-3.19.6-x64-54e66469a933b60ddf175f858f82eaeb97e48c8d
+   216→2026-08-08T11:00:45.9984790Z ##[end-action id=__subosito_flutter-action.cache-flutter;outcome=success;conclusion=success;duration_ms=8816]
+   217→2026-08-08T11:00:45.9987594Z ##[start-action display=Cache pub dependencies;id=__subosito_flutter-action.cache-pub]
+   218→2026-08-08T11:00:46.1615007Z ##[group]Run actions/cache@v5
+   219→2026-08-08T11:00:46.1615254Z with:
+   220→2026-08-08T11:00:46.1615473Z   path: /home/runner/.pub-cache
+   221→2026-08-08T11:00:46.1616061Z   key: flutter-pub-linux-stable-3.19.6-x64-54e66469a933b60ddf175f858f82eaeb97e48c8d-751c1f81baa6853b314c5ca9b2ff9631e656956c5a34028a64fc3eab17c47f8f
+   222→2026-08-08T11:00:46.1616607Z   enableCrossOsArchive: false
+   223→2026-08-08T11:00:46.1616872Z   fail-on-cache-miss: false
+   224→2026-08-08T11:00:46.1617119Z   lookup-only: false
+   225→2026-08-08T11:00:46.1617331Z   save-always: false
+   226→2026-08-08T11:00:46.1617560Z env:
+   227→2026-08-08T11:00:46.1617752Z   FLUTTER_VERSION: 3.19.6
+   228→2026-08-08T11:00:46.1618065Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   229→2026-08-08T11:00:46.1618461Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   230→2026-08-08T11:00:46.1618816Z ##[endgroup]
+   231→2026-08-08T11:00:46.3591203Z Cache hit for: flutter-pub-linux-stable-3.19.6-x64-54e66469a933b60ddf175f858f82eaeb97e48c8d-751c1f81baa6853b314c5ca9b2ff9631e656956c5a34028a64fc3eab17c47f8f
+   232→2026-08-08T11:00:47.1658602Z Received 55372520 of 55372520 (100.0%), 78.2 MBs/sec
+   233→2026-08-08T11:00:47.1660396Z Cache Size: ~53 MB (55372520 B)
+   234→2026-08-08T11:00:47.1711928Z [command]/usr/bin/tar -xf /home/runner/work/_temp/a2da5f66-dbae-4978-95e2-8aaa367a93fb/cache.tzst -P -C /home/runner/work/leaksextape-app/leaksextape-app --use-compress-program unzstd
+   235→2026-08-08T11:00:47.4612603Z Cache restored successfully
+   236→2026-08-08T11:00:47.4687214Z Cache restored from key: flutter-pub-linux-stable-3.19.6-x64-54e66469a933b60ddf175f858f82eaeb97e48c8d-751c1f81baa6853b314c5ca9b2ff9631e656956c5a34028a64fc3eab17c47f8f
+   237→2026-08-08T11:00:47.4735772Z ##[end-action id=__subosito_flutter-action.cache-pub;outcome=success;conclusion=success;duration_ms=1474]
+   238→2026-08-08T11:00:47.4738180Z ##[start-action display=Run setup script;id=__subosito_flutter-action.__run_3]
+   239→2026-08-08T11:00:47.4767335Z ##[group]Run $GITHUB_ACTION_PATH/setup.sh \
+   240→2026-08-08T11:00:47.4767660Z [36;1m$GITHUB_ACTION_PATH/setup.sh \[0m
+   241→2026-08-08T11:00:47.4767904Z [36;1m  -n '3.19.6' \[0m
+   242→2026-08-08T11:00:47.4768154Z [36;1m  -a 'x64' \[0m
+   243→2026-08-08T11:00:47.4768426Z [36;1m  -c '/opt/hostedtoolcache/flutter/stable-3.19.6-x64' \[0m
+   244→2026-08-08T11:00:47.4768732Z [36;1m  -d '/home/runner/.pub-cache' \[0m
+   245→2026-08-08T11:00:47.4769004Z [36;1m  stable[0m
+   246→2026-08-08T11:00:47.4793059Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+   247→2026-08-08T11:00:47.4793473Z env:
+   248→2026-08-08T11:00:47.4793745Z   FLUTTER_VERSION: 3.19.6
+   249→2026-08-08T11:00:47.4794178Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   250→2026-08-08T11:00:47.4794582Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   251→2026-08-08T11:00:47.4794953Z ##[endgroup]
+   252→2026-08-08T11:00:47.7284156Z ##[end-action id=__subosito_flutter-action.__run_3;outcome=success;conclusion=success;duration_ms=254]
+   253→2026-08-08T11:00:47.7325904Z ##[group]Run flutter pub get
+   254→2026-08-08T11:00:47.7326186Z [36;1mflutter pub get[0m
+   255→2026-08-08T11:00:47.7348867Z shell: /usr/bin/bash -e {0}
+   256→2026-08-08T11:00:47.7349109Z env:
+   257→2026-08-08T11:00:47.7349306Z   FLUTTER_VERSION: 3.19.6
+   258→2026-08-08T11:00:47.7349633Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   259→2026-08-08T11:00:47.7350068Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   260→2026-08-08T11:00:47.7350464Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.19.6-x64/flutter
+   261→2026-08-08T11:00:47.7350770Z   PUB_CACHE: /home/runner/.pub-cache
+   262→2026-08-08T11:00:47.7351028Z ##[endgroup]
+   263→2026-08-08T11:00:48.0832761Z 
+   264→2026-08-08T11:00:48.0841477Z   ╔════════════════════════════════════════════════════════════════════════════╗
+   265→2026-08-08T11:00:48.0842208Z   ║                 Welcome to Flutter! - https://flutter.dev                  ║
+   266→2026-08-08T11:00:48.0843427Z   ║                                                                            ║
+   267→2026-08-08T11:00:48.0843992Z   ║ The Flutter tool uses Google Analytics to anonymously report feature usage ║
+   268→2026-08-08T11:00:48.0844592Z   ║ statistics and basic crash reports. This data is used to help improve      ║
+   269→2026-08-08T11:00:48.0845137Z   ║ Flutter tools over time.                                                   ║
+   270→2026-08-08T11:00:48.0845641Z   ║                                                                            ║
+   271→2026-08-08T11:00:48.0846241Z   ║ Flutter tool analytics are not sent on the very first run. To disable      ║
+   272→2026-08-08T11:00:48.0846869Z   ║ reporting, type 'flutter config --no-analytics'. To display the current    ║
+   273→2026-08-08T11:00:48.0847485Z   ║ setting, type 'flutter config'. If you opt out of analytics, an opt-out    ║
+   274→2026-08-08T11:00:48.0848079Z   ║ event will be sent, and then no further information will be sent by the    ║
+   275→2026-08-08T11:00:48.0848648Z   ║ Flutter tool.                                                              ║
+   276→2026-08-08T11:00:48.0849205Z   ║                                                                            ║
+   277→2026-08-08T11:00:48.0849707Z   ║ By downloading the Flutter SDK, you agree to the Google Terms of Service.  ║
+   278→2026-08-08T11:00:48.0850327Z   ║ The Google Privacy Policy describes how data is handled in this service.   ║
+   279→2026-08-08T11:00:48.0850921Z   ║                                                                            ║
+   280→2026-08-08T11:00:48.0851441Z   ║ Moreover, Flutter includes the Dart SDK, which may send usage metrics and  ║
+   281→2026-08-08T11:00:48.0852073Z   ║ crash reports to Google.                                                   ║
+   282→2026-08-08T11:00:48.0852551Z   ║                                                                            ║
+   283→2026-08-08T11:00:48.0853099Z   ║ Read about data we send with crash reports:                                ║
+   284→2026-08-08T11:00:48.0853983Z   ║ https://flutter.dev/docs/reference/crash-reporting                         ║
+   285→2026-08-08T11:00:48.0854639Z   ║                                                                            ║
+   286→2026-08-08T11:00:48.0855148Z   ║ See Google's privacy policy:                                               ║
+   287→2026-08-08T11:00:48.0855725Z   ║ https://policies.google.com/privacy                                        ║
+   288→2026-08-08T11:00:48.0856310Z   ║                                                                            ║
+   289→2026-08-08T11:00:48.0856821Z   ║ To disable animations in this tool, use                                    ║
+   290→2026-08-08T11:00:48.0857479Z   ║ 'flutter config --no-cli-animations'.                                      ║
+   291→2026-08-08T11:00:48.0858122Z   ╚════════════════════════════════════════════════════════════════════════════╝
+   292→2026-08-08T11:00:48.0858391Z 
+   293→2026-08-08T11:00:48.2335170Z Resolving dependencies...
+   294→2026-08-08T11:00:49.1578394Z < async 2.11.0 (was 2.13.1) (2.13.1 available)
+   295→2026-08-08T11:00:49.1578811Z < boolean_selector 2.1.1 (was 2.1.2) (2.1.2 available)
+   296→2026-08-08T11:00:49.1579691Z < cached_network_image 3.4.0 (was 3.4.1) (3.4.1 available)
+   297→2026-08-08T11:00:49.1580145Z < cached_network_image_web 1.3.0 (was 1.3.1) (1.3.1 available)
+   298→2026-08-08T11:00:49.1580550Z < characters 1.3.0 (was 1.4.1) (1.4.1 available)
+   299→2026-08-08T11:00:49.1580838Z < chewie 1.8.7 (was 1.14.1) (1.14.1 available)
+   300→2026-08-08T11:00:49.1581100Z < clock 1.1.1 (was 1.1.2) (1.1.2 available)
+   301→2026-08-08T11:00:49.1581435Z < collection 1.18.0 (was 1.19.1) (1.19.1 available)
+   302→2026-08-08T11:00:49.1581737Z < crypto 3.0.3 (was 3.0.7) (3.0.7 available)
+   303→2026-08-08T11:00:49.1582364Z < cupertino_icons 1.0.8 (was 1.0.9) (from transitive dependency to direct dependency) (1.0.9 available)
+   304→2026-08-08T11:00:49.1582946Z < dbus 0.7.12 (was 0.7.14) (0.7.14 available)
+   305→2026-08-08T11:00:49.1583491Z < fake_async 1.3.1 (was 1.3.3) (1.3.3 available)
+   306→2026-08-08T11:00:49.1583895Z < ffi 2.1.3 (was 2.2.0) (2.2.0 available)
+   307→2026-08-08T11:00:49.1584349Z   flutter_cache_manager 3.4.1 (3.4.2 available)
+   308→2026-08-08T11:00:49.1584881Z   flutter_lints 3.0.2 (6.0.0 available)
+   309→2026-08-08T11:00:49.1585324Z < http 1.2.2 (was 1.6.0) (1.6.0 available)
+   310→2026-08-08T11:00:49.1585745Z < http_parser 4.0.2 (was 4.1.2) (4.1.2 available)
+   311→2026-08-08T11:00:49.1586185Z < leak_tracker 10.0.0 (was 11.0.2) (11.0.2 available)
+   312→2026-08-08T11:00:49.1586679Z < leak_tracker_flutter_testing 2.0.1 (was 3.0.10) (3.0.10 available)
+   313→2026-08-08T11:00:49.1587143Z < leak_tracker_testing 2.0.1 (was 3.0.2) (3.0.2 available)
+   314→2026-08-08T11:00:49.1587542Z   lints 3.0.0 (6.1.0 available)
+   315→2026-08-08T11:00:49.1587994Z < matcher 0.12.16+1 (was 0.12.19) (0.12.20 available)
+   316→2026-08-08T11:00:49.1588465Z < material_color_utilities 0.8.0 (was 0.13.0) (0.13.0 available)
+   317→2026-08-08T11:00:49.1588876Z < meta 1.11.0 (was 1.18.0) (1.19.0 available)
+   318→2026-08-08T11:00:49.1589348Z < package_info_plus 8.0.2 (was 10.2.1) (10.2.1 available)
+   319→2026-08-08T11:00:49.1589815Z < package_info_plus_platform_interface 3.2.1 (was 4.1.0) (4.1.0 available)
+   320→2026-08-08T11:00:49.1590508Z < path 1.9.0 (was 1.9.1) (from direct dependency to transitive dependency) (1.9.1 available)
+   321→2026-08-08T11:00:49.1591026Z < path_provider 2.1.4 (was 2.1.6) (2.1.6 available)
+   322→2026-08-08T11:00:49.1591553Z < path_provider_android 2.2.4 (was 2.3.1) (2.3.1 available)
+   323→2026-08-08T11:00:49.1592197Z < path_provider_foundation 2.4.1 (was 2.6.0) (2.6.0 available)
+   324→2026-08-08T11:00:49.1592657Z < path_provider_linux 2.2.1 (was 2.2.2) (2.2.2 available)
+   325→2026-08-08T11:00:49.1593149Z < path_provider_platform_interface 2.1.2 (was 2.1.3) (2.1.3 available)
+   326→2026-08-08T11:00:49.1593838Z < petitparser 6.0.2 (was 7.0.2) (7.0.2 available)
+   327→2026-08-08T11:00:49.1594294Z < shared_preferences 2.2.3 (was 2.5.5) (2.5.5 available)
+   328→2026-08-08T11:00:49.1594758Z < shared_preferences_android 2.2.2 (was 2.4.27) (2.4.27 available)
+   329→2026-08-08T11:00:49.1595297Z < shared_preferences_foundation 2.5.3 (was 2.5.6) (2.5.6 available)
+   330→2026-08-08T11:00:49.1595804Z < shared_preferences_platform_interface 2.4.1 (was 2.4.2) (2.4.2 available)
+   331→2026-08-08T11:00:49.1596334Z < shared_preferences_web 2.4.1 (was 2.4.3) (2.4.3 available)
+   332→2026-08-08T11:00:49.1596809Z > sky_engine 0.0.99 from sdk flutter (was 0.0.0 from sdk flutter)
+   333→2026-08-08T11:00:49.1597229Z < source_span 1.10.0 (was 1.10.2) (1.10.2 available)
+   334→2026-08-08T11:00:49.1597752Z < sqflite 2.3.3+1 (was 2.4.3) (2.4.3 available)
+   335→2026-08-08T11:00:49.1598182Z < sqflite_common 2.5.4 (was 2.5.11) (2.5.11 available)
+   336→2026-08-08T11:00:49.1598610Z < stack_trace 1.11.1 (was 1.12.1) (1.12.1 available)
+   337→2026-08-08T11:00:49.1599312Z < stream_channel 2.1.2 (was 2.1.4) (2.1.4 available)
+   338→2026-08-08T11:00:49.1599737Z < string_scanner 1.2.0 (was 1.4.1) (1.4.1 available)
+   339→2026-08-08T11:00:49.1600180Z < synchronized 3.1.0+1 (was 3.4.1) (3.4.1+1 available)
+   340→2026-08-08T11:00:49.1600621Z < term_glyph 1.2.1 (was 1.2.2) (1.2.2 available)
+   341→2026-08-08T11:00:49.1601051Z < test_api 0.6.1 (was 0.7.11) (0.7.13 available)
+   342→2026-08-08T11:00:49.1601496Z < typed_data 1.3.2 (was 1.4.0) (1.4.0 available)
+   343→2026-08-08T11:00:49.1601993Z < url_launcher 6.3.1 (was 6.3.2) (6.3.2 available)
+   344→2026-08-08T11:00:49.1602584Z < url_launcher_android 6.3.2 (was 6.3.32) (6.3.32 available)
+   345→2026-08-08T11:00:49.1603035Z < url_launcher_ios 6.3.2 (was 6.4.1) (6.4.1 available)
+   346→2026-08-08T11:00:49.1603570Z < url_launcher_linux 3.2.1 (was 3.2.2) (3.2.2 available)
+   347→2026-08-08T11:00:49.1603923Z < url_launcher_macos 3.2.2 (was 3.2.5) (3.2.5 available)
+   348→2026-08-08T11:00:49.1604397Z < url_launcher_web 2.3.3 (was 2.4.3) (2.4.3 available)
+   349→2026-08-08T11:00:49.1604789Z < url_launcher_windows 3.1.3 (was 3.1.5) (3.1.5 available)
+   350→2026-08-08T11:00:49.1605187Z < vector_math 2.1.4 (was 2.2.0) (2.4.2 available)
+   351→2026-08-08T11:00:49.1605594Z < video_player 2.9.2 (was 2.13.0) (2.13.0 available)
+   352→2026-08-08T11:00:49.1606000Z < video_player_android 2.4.14 (was 2.12.0) (2.12.0 available)
+   353→2026-08-08T11:00:49.1606464Z < video_player_avfoundation 2.6.5 (was 2.11.0) (2.11.0 available)
+   354→2026-08-08T11:00:49.1606963Z < video_player_platform_interface 6.2.3 (was 6.9.0) (6.9.0 available)
+   355→2026-08-08T11:00:49.1607465Z < video_player_web 2.3.2 (was 2.4.0) (2.4.0 available)
+   356→2026-08-08T11:00:49.1607768Z < vm_service 13.0.0 (was 15.2.0) (15.2.0 available)
+   357→2026-08-08T11:00:49.1608112Z < wakelock_plus 1.2.8 (was 1.6.1) (1.7.0 available)
+   358→2026-08-08T11:00:49.1608444Z < wakelock_plus_platform_interface 1.2.3 (was 1.5.1) (1.6.0 available)
+   359→2026-08-08T11:00:49.1608938Z < web 0.5.1 (was 1.1.1) (1.1.1 available)
+   360→2026-08-08T11:00:49.1609247Z < win32 5.5.0 (was 6.3.0) (6.4.0 available)
+   361→2026-08-08T11:00:49.1609558Z < xml 6.5.0 (was 6.6.1) (7.0.1 available)
+   362→2026-08-08T11:00:49.1609940Z These packages are no longer being depended on:
+   363→2026-08-08T11:00:49.1610265Z - code_assets 1.2.1
+   364→2026-08-08T11:00:49.1610554Z - connectivity_plus 5.0.2
+   365→2026-08-08T11:00:49.1610822Z - connectivity_plus_platform_interface 1.2.4
+   366→2026-08-08T11:00:49.1611132Z - ffi_leak_tracker 0.1.2
+   367→2026-08-08T11:00:49.1611385Z - hooks 2.0.2
+   368→2026-08-08T11:00:49.1611651Z - jni 1.0.0
+   369→2026-08-08T11:00:49.1611915Z - jni_flutter 1.0.1
+   370→2026-08-08T11:00:49.1612271Z - js 0.6.7
+   371→2026-08-08T11:00:49.1612539Z - logging 1.3.0
+   372→2026-08-08T11:00:49.1612844Z - nm 0.5.0
+   373→2026-08-08T11:00:49.1613149Z - objective_c 9.4.1
+   374→2026-08-08T11:00:49.1613706Z - package_config 2.2.0
+   375→2026-08-08T11:00:49.1614023Z - pub_semver 2.2.0
+   376→2026-08-08T11:00:49.1614308Z - record_use 0.6.0
+   377→2026-08-08T11:00:49.1614654Z - sqflite_android 2.4.3
+   378→2026-08-08T11:00:49.1614968Z - sqflite_darwin 2.4.3+1
+   379→2026-08-08T11:00:49.1615317Z - sqflite_platform_interface 2.4.1
+   380→2026-08-08T11:00:49.1615710Z - yaml 3.1.3
+   381→2026-08-08T11:00:49.1616027Z Changed 83 dependencies!
+   382→2026-08-08T11:00:49.1616502Z 67 packages have newer versions incompatible with dependency constraints.
+   383→2026-08-08T11:00:49.1617037Z Try `flutter pub outdated` for more information.
+   384→2026-08-08T11:00:49.5247912Z ##[group]Run flutter build apk --debug
+   385→2026-08-08T11:00:49.5248220Z [36;1mflutter build apk --debug[0m
+   386→2026-08-08T11:00:49.5272004Z shell: /usr/bin/bash -e {0}
+   387→2026-08-08T11:00:49.5272313Z env:
+   388→2026-08-08T11:00:49.5272545Z   FLUTTER_VERSION: 3.19.6
+   389→2026-08-08T11:00:49.5272908Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   390→2026-08-08T11:00:49.5273521Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+   391→2026-08-08T11:00:49.5273927Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.19.6-x64/flutter
+   392→2026-08-08T11:00:49.5274298Z   PUB_CACHE: /home/runner/.pub-cache
+   393→2026-08-08T11:00:49.5274555Z ##[endgroup]
+   394→2026-08-08T11:00:49.8962964Z 
+   395→2026-08-08T11:00:52.3801748Z Running Gradle task 'assembleDebug'...                          
+   396→2026-08-08T11:00:52.3822344Z ##[error]Exception in thread "main" java.net.SocketException: Connection reset
+   397→2026-08-08T11:00:52.3824149Z    at java.base/sun.nio.ch.NioSocketImpl.implRead(NioSocketImpl.java:328)
+   398→2026-08-08T11:00:52.3824661Z    at java.base/sun.nio.ch.NioSocketImpl.read(NioSocketImpl.java:355)
+   399→2026-08-08T11:00:52.3825108Z    at java.base/sun.nio.ch.NioSocketImpl$1.read(NioSocketImpl.java:808)
+   400→2026-08-08T11:00:52.3825609Z    at java.base/java.net.Socket$SocketInputStream.read(Socket.java:966)
+   401→2026-08-08T11:00:52.3826215Z    at java.base/sun.security.ssl.SSLSocketInputRecord.read(SSLSocketInputRecord.java:484)
+   402→2026-08-08T11:00:52.3826926Z    at java.base/sun.security.ssl.SSLSocketInputRecord.readHeader(SSLSocketInputRecord.java:478)
+   403→2026-08-08T11:00:52.3827573Z    at java.base/sun.security.ssl.SSLSocketInputRecord.decode(SSLSocketInputRecord.java:160)
+   404→2026-08-08T11:00:52.3828155Z    at java.base/sun.security.ssl.SSLTransport.decode(SSLTransport.java:111)
+   405→2026-08-08T11:00:52.3828625Z    at java.base/sun.security.ssl.SSLSocketImpl.decode(SSLSocketImpl.java:1509)
+   406→2026-08-08T11:00:52.3829250Z    at java.base/sun.security.ssl.SSLSocketImpl.readHandshakeRecord(SSLSocketImpl.java:1424)
+   407→2026-08-08T11:00:52.3829896Z    at java.base/sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:455)
+   408→2026-08-08T11:00:52.3830540Z    at java.base/sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:426)
+   409→2026-08-08T11:00:52.3831258Z    at java.base/sun.net.www.protocol.https.HttpsClient.afterConnect(HttpsClient.java:589)
+   410→2026-08-08T11:00:52.3832447Z    at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(AbstractDelegateHttpsURLConnection.java:187)
+   411→2026-08-08T11:00:52.3833572Z    at java.base/sun.net.www.protocol.http.HttpURLConnection.followRedirect0(HttpURLConnection.java:2974)
+   412→2026-08-08T11:00:52.3834437Z    at java.base/sun.net.www.protocol.http.HttpURLConnection.followRedirect(HttpURLConnection.java:2883)
+   413→2026-08-08T11:00:52.3835260Z    at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1979)
+   414→2026-08-08T11:00:52.3836096Z    at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1641)
+   415→2026-08-08T11:00:52.3836938Z    at java.base/sun.net.www.protocol.https.HttpsURLConnectionImpl.getInputStream(HttpsURLConnectionImpl.java:224)
+   416→2026-08-08T11:00:52.3837663Z    at org.gradle.wrapper.Download.downloadInternal(Download.java:58)
+   417→2026-08-08T11:00:52.3838205Z    at org.gradle.wrapper.Download.download(Download.java:44)
+   418→2026-08-08T11:00:52.3838721Z    at org.gradle.wrapper.Install$1.call(Install.java:61)
+   419→2026-08-08T11:00:52.3839195Z    at org.gradle.wrapper.Install$1.call(Install.java:48)
+   420→2026-08-08T11:00:52.3839804Z    at org.gradle.wrapper.ExclusiveFileAccessManager.access(ExclusiveFileAccessManager.java:65)
+   421→2026-08-08T11:00:52.3840476Z    at org.gradle.wrapper.Install.createDist(Install.java:48)
+   422→2026-08-08T11:00:52.3841017Z    at org.gradle.wrapper.WrapperExecutor.execute(WrapperExecutor.java:128)
+   423→2026-08-08T11:00:52.3841612Z    at org.gradle.wrapper.GradleWrapperMain.main(GradleWrapperMain.java:61)
+   424→2026-08-08T11:00:52.3907385Z Running Gradle task 'assembleDebug'...                           2,473ms
+   425→2026-08-08T11:00:52.3912629Z [!] Gradle threw an error while downloading artifacts from the network.
+   426→2026-08-08T11:00:52.3914718Z Retrying Gradle Build: #1, wait time: 100ms
+   427→2026-08-08T11:02:29.8289751Z One or more plugins require a higher Android NDK version.
+   428→2026-08-08T11:02:29.8290539Z Running Gradle task 'assembleDebug'...                          
+   429→2026-08-08T11:02:29.8299597Z Fix this issue by adding the following to /home/runner/work/leaksextape-app/leaksextape-app/android/app/build.gradle:
+   430→2026-08-08T11:02:29.8300662Z android {
+   431→2026-08-08T11:02:29.8301106Z   ndkVersion "25.1.8937393"
+   432→2026-08-08T11:02:29.8301474Z   ...
+   433→2026-08-08T11:02:29.8301876Z }
+   434→2026-08-08T11:02:29.8302059Z 
+   435→2026-08-08T11:02:32.1211845Z lib/providers/video_provider.dart:25:8: Error: Expected '>' after this.
+   436→2026-08-08T11:02:32.1212660Z   List<VideoItem get videos => _videos;
+   437→2026-08-08T11:02:32.1213410Z        ^^^^^^^^^
+   438→2026-08-08T11:02:32.4221399Z lib/services/database_service.dart:5:8: Error: Error when reading 'lib/services/constants.dart': No such file or directory
+   439→2026-08-08T11:02:32.4224819Z import 'constants.dart';
+   440→2026-08-08T11:02:32.4225260Z        ^
+   441→2026-08-08T11:02:32.4225945Z lib/services/api_service.dart:8:8: Error: Error when reading 'lib/services/constants.dart': No such file or directory
+   442→2026-08-08T11:02:32.4226607Z import 'constants.dart';
+   443→2026-08-08T11:02:32.4227007Z        ^
+   444→2026-08-08T11:02:32.4227658Z lib/services/api_service.dart:7:8: Error: Error when reading 'lib/services/html_parser.dart': No such file or directory
+   445→2026-08-08T11:02:32.4228343Z import 'html_parser.dart';
+   446→2026-08-08T11:02:32.4228738Z        ^
+   447→2026-08-08T11:02:34.1214419Z lib/screens/categories_screen.dart:50:58: Error: The getter 'surfaceContainerHighest' isn't defined for the class 'ColorScheme'.
+   448→2026-08-08T11:02:34.1215589Z  - 'ColorScheme' is from 'package:flutter/src/material/color_scheme.dart' ('/opt/hostedtoolcache/flutter/stable-3.19.6-x64/flutter/packages/flutter/lib/src/material/color_scheme.dart').
+   449→2026-08-08T11:02:34.1216411Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'surfaceContainerHighest'.
+   450→2026-08-08T11:02:34.1217108Z                 fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+   451→2026-08-08T11:02:34.1217647Z                                                          ^^^^^^^^^^^^^^^^^^^^^^^
+   452→2026-08-08T11:02:34.6264729Z lib/screens/video_player_screen.dart:326:74: Error: The getter 'surfaceContainerHighest' isn't defined for the class 'ColorScheme'.
+   453→2026-08-08T11:02:34.6314868Z  - 'ColorScheme' is from 'package:flutter/src/material/color_scheme.dart' ('/opt/hostedtoolcache/flutter/stable-3.19.6-x64/flutter/packages/flutter/lib/src/material/color_scheme.dart').
+   454→2026-08-08T11:02:34.6334594Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'surfaceContainerHighest'.
+   455→2026-08-08T11:02:34.6374330Z                           backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+   456→2026-08-08T11:02:34.6394396Z                                                                          ^^^^^^^^^^^^^^^^^^^^^^^
+   457→2026-08-08T11:02:34.6424623Z lib/services/database_service.dart:22:31: Error: The getter 'AppConstants' isn't defined for the class 'DatabaseService'.
+   458→2026-08-08T11:02:34.6434653Z  - 'DatabaseService' is from 'package:leaksextape_app/services/database_service.dart' ('lib/services/database_service.dart').
+   459→2026-08-08T11:02:34.6435738Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppConstants'.
+   460→2026-08-08T11:02:34.6436512Z     final path = join(dbPath, AppConstants.databaseName);
+   461→2026-08-08T11:02:34.6437185Z                               ^^^^^^^^^^^^
+   462→2026-08-08T11:02:34.6437930Z lib/services/database_service.dart:26:16: Error: The getter 'AppConstants' isn't defined for the class 'DatabaseService'.
+   463→2026-08-08T11:02:34.6438946Z  - 'DatabaseService' is from 'package:leaksextape_app/services/database_service.dart' ('lib/services/database_service.dart').
+   464→2026-08-08T11:02:34.6440364Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppConstants'.
+   465→2026-08-08T11:02:34.6441100Z       version: AppConstants.databaseVersion,
+   466→2026-08-08T11:02:34.6441651Z                ^^^^^^^^^^^^
+   467→2026-08-08T11:02:34.6442313Z lib/services/api_service.dart:22:23: Error: The getter 'AppConstants' isn't defined for the class 'LeakSexTapeService'.
+   468→2026-08-08T11:02:34.6443498Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   469→2026-08-08T11:02:34.6444511Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppConstants'.
+   470→2026-08-08T11:02:34.6445240Z         'User-Agent': AppConstants.userAgent,
+   471→2026-08-08T11:02:34.6445728Z                       ^^^^^^^^^^^^
+   472→2026-08-08T11:02:34.6446491Z lib/services/api_service.dart:41:22: Error: The getter 'AppConstants' isn't defined for the class 'LeakSexTapeService'.
+   473→2026-08-08T11:02:34.6447461Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   474→2026-08-08T11:02:34.6448407Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppConstants'.
+   475→2026-08-08T11:02:34.6449283Z       final url = '${AppConstants.baseUrl}${AppConstants.latestEndpoint}?page=$page';
+   476→2026-08-08T11:02:34.6449870Z                      ^^^^^^^^^^^^
+   477→2026-08-08T11:02:34.6450590Z lib/services/api_service.dart:41:45: Error: The getter 'AppConstants' isn't defined for the class 'LeakSexTapeService'.
+   478→2026-08-08T11:02:34.6451530Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   479→2026-08-08T11:02:34.6452433Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppConstants'.
+   480→2026-08-08T11:02:34.6453381Z       final url = '${AppConstants.baseUrl}${AppConstants.latestEndpoint}?page=$page';
+   481→2026-08-08T11:02:34.6454044Z                                             ^^^^^^^^^^^^
+   482→2026-08-08T11:02:34.6454789Z lib/services/api_service.dart:48:24: Error: The getter 'HtmlParserUtil' isn't defined for the class 'LeakSexTapeService'.
+   483→2026-08-08T11:02:34.6455751Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   484→2026-08-08T11:02:34.6456845Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'HtmlParserUtil'.
+   485→2026-08-08T11:02:34.6457608Z         final videos = HtmlParserUtil.parseVideoList(document);
+   486→2026-08-08T11:02:34.6458102Z                        ^^^^^^^^^^^^^^
+   487→2026-08-08T11:02:34.6458795Z lib/services/api_service.dart:72:22: Error: The getter 'AppConstants' isn't defined for the class 'LeakSexTapeService'.
+   488→2026-08-08T11:02:34.6459817Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   489→2026-08-08T11:02:34.6460737Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppConstants'.
+   490→2026-08-08T11:02:34.6461547Z       final url = '${AppConstants.baseUrl}${AppConstants.searchEndpoint}?$queryString';
+   491→2026-08-08T11:02:34.6462139Z                      ^^^^^^^^^^^^
+   492→2026-08-08T11:02:34.6462894Z lib/services/api_service.dart:72:45: Error: The getter 'AppConstants' isn't defined for the class 'LeakSexTapeService'.
+   493→2026-08-08T11:02:34.6463971Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   494→2026-08-08T11:02:34.6464883Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppConstants'.
+   495→2026-08-08T11:02:34.6465816Z       final url = '${AppConstants.baseUrl}${AppConstants.searchEndpoint}?$queryString';
+   496→2026-08-08T11:02:34.6466424Z                                             ^^^^^^^^^^^^
+   497→2026-08-08T11:02:34.6467203Z lib/services/api_service.dart:80:24: Error: The getter 'HtmlParserUtil' isn't defined for the class 'LeakSexTapeService'.
+   498→2026-08-08T11:02:34.6468308Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   499→2026-08-08T11:02:34.6469243Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'HtmlParserUtil'.
+   500→2026-08-08T11:02:34.6469994Z         final videos = HtmlParserUtil.parseVideoList(document);
+   501→2026-08-08T11:02:34.6470673Z                        ^^^^^^^^^^^^^^
+   502→2026-08-08T11:02:34.6471336Z lib/services/api_service.dart:81:28: Error: The getter 'HtmlParserUtil' isn't defined for the class 'LeakSexTapeService'.
+   503→2026-08-08T11:02:34.6472377Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   504→2026-08-08T11:02:34.6473658Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'HtmlParserUtil'.
+   505→2026-08-08T11:02:34.6474596Z         final pagination = HtmlParserUtil.parsePagination(document);
+   506→2026-08-08T11:02:34.6475279Z                            ^^^^^^^^^^^^^^
+   507→2026-08-08T11:02:34.6476229Z lib/services/api_service.dart:107:22: Error: The getter 'AppConstants' isn't defined for the class 'LeakSexTapeService'.
+   508→2026-08-08T11:02:34.6477422Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   509→2026-08-08T11:02:34.6478457Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppConstants'.
+   510→2026-08-08T11:02:34.6479359Z       final url = '${AppConstants.baseUrl}${AppConstants.videoEndpoint}/$videoId';
+   511→2026-08-08T11:02:34.6480006Z                      ^^^^^^^^^^^^
+   512→2026-08-08T11:02:34.6480731Z lib/services/api_service.dart:107:45: Error: The getter 'AppConstants' isn't defined for the class 'LeakSexTapeService'.
+   513→2026-08-08T11:02:34.6481755Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   514→2026-08-08T11:02:34.6482746Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppConstants'.
+   515→2026-08-08T11:02:34.6483837Z       final url = '${AppConstants.baseUrl}${AppConstants.videoEndpoint}/$videoId';
+   516→2026-08-08T11:02:34.6484452Z                                             ^^^^^^^^^^^^
+   517→2026-08-08T11:02:34.6485258Z lib/services/api_service.dart:114:24: Error: The getter 'HtmlParserUtil' isn't defined for the class 'LeakSexTapeService'.
+   518→2026-08-08T11:02:34.6486449Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   519→2026-08-08T11:02:34.6487484Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'HtmlParserUtil'.
+   520→2026-08-08T11:02:34.6488451Z         final source = HtmlParserUtil.parseVideoSource(document, videoId);
+   521→2026-08-08T11:02:34.6489243Z                        ^^^^^^^^^^^^^^
+   522→2026-08-08T11:02:34.6490043Z lib/services/api_service.dart:137:22: Error: The getter 'AppConstants' isn't defined for the class 'LeakSexTapeService'.
+   523→2026-08-08T11:02:34.6491251Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   524→2026-08-08T11:02:34.6492286Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppConstants'.
+   525→2026-08-08T11:02:34.6493104Z       final url = '${AppConstants.baseUrl}${AppConstants.categoriesEndpoint}';
+   526→2026-08-08T11:02:34.6493984Z                      ^^^^^^^^^^^^
+   527→2026-08-08T11:02:34.6494853Z lib/services/api_service.dart:137:45: Error: The getter 'AppConstants' isn't defined for the class 'LeakSexTapeService'.
+   528→2026-08-08T11:02:34.6496027Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   529→2026-08-08T11:02:34.6496930Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppConstants'.
+   530→2026-08-08T11:02:34.6497691Z       final url = '${AppConstants.baseUrl}${AppConstants.categoriesEndpoint}';
+   531→2026-08-08T11:02:34.6498526Z                                             ^^^^^^^^^^^^
+   532→2026-08-08T11:02:34.6499366Z lib/services/api_service.dart:144:28: Error: The getter 'HtmlParserUtil' isn't defined for the class 'LeakSexTapeService'.
+   533→2026-08-08T11:02:34.6500205Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   534→2026-08-08T11:02:34.6501100Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'HtmlParserUtil'.
+   535→2026-08-08T11:02:34.6501874Z         final categories = HtmlParserUtil.parseCategories(document);
+   536→2026-08-08T11:02:34.6502433Z                            ^^^^^^^^^^^^^^
+   537→2026-08-08T11:02:34.6503090Z lib/services/api_service.dart:159:22: Error: The getter 'AppConstants' isn't defined for the class 'LeakSexTapeService'.
+   538→2026-08-08T11:02:34.6504388Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   539→2026-08-08T11:02:34.6505414Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppConstants'.
+   540→2026-08-08T11:02:34.6506330Z       final url = '${AppConstants.baseUrl}${AppConstants.tagsEndpoint}?q=$query';
+   541→2026-08-08T11:02:34.6506989Z                      ^^^^^^^^^^^^
+   542→2026-08-08T11:02:34.6507708Z lib/services/api_service.dart:159:45: Error: The getter 'AppConstants' isn't defined for the class 'LeakSexTapeService'.
+   543→2026-08-08T11:02:34.6508697Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   544→2026-08-08T11:02:34.6509558Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppConstants'.
+   545→2026-08-08T11:02:34.6510367Z       final url = '${AppConstants.baseUrl}${AppConstants.tagsEndpoint}?q=$query';
+   546→2026-08-08T11:02:34.6510968Z                                             ^^^^^^^^^^^^
+   547→2026-08-08T11:02:34.6511693Z lib/services/api_service.dart:166:16: Error: The getter 'HtmlParserUtil' isn't defined for the class 'LeakSexTapeService'.
+   548→2026-08-08T11:02:34.6513011Z  - 'LeakSexTapeService' is from 'package:leaksextape_app/services/api_service.dart' ('lib/services/api_service.dart').
+   549→2026-08-08T11:02:34.6514338Z Try correcting the name to the name of an existing getter, or defining a getter or field named 'HtmlParserUtil'.
+   550→2026-08-08T11:02:34.6515278Z         return HtmlParserUtil.parseTags(document);
+   551→2026-08-08T11:02:34.6515812Z                ^^^^^^^^^^^^^^
+   552→2026-08-08T11:02:35.5211403Z ../../../.pub-cache/hosted/pub.dev/chewie-1.8.7/lib/src/material/material_controls.dart:473:35: Error: The method 'withValues' isn't defined for the class 'Color'.
+   553→2026-08-08T11:02:35.5212249Z  - 'Color' is from 'dart:ui'.
+   554→2026-08-08T11:02:35.5213033Z Try correcting the name to the name of an existing method, or defining a method named 'withValues'.
+   555→2026-08-08T11:02:35.5213883Z               color: Colors.white.withValues(alpha: .75),
+   556→2026-08-08T11:02:35.5214473Z                                   ^^^^^^^^^^
+   557→2026-08-08T11:02:35.5215376Z ../../../.pub-cache/hosted/pub.dev/chewie-1.8.7/lib/src/material/material_controls.dart:685:57: Error: The method 'withValues' isn't defined for the class 'Color'.
+   558→2026-08-08T11:02:35.5215949Z  - 'Color' is from 'dart:ui'.
+   559→2026-08-08T11:02:35.5216401Z Try correcting the name to the name of an existing method, or defining a method named 'withValues'.
+   560→2026-08-08T11:02:35.5216952Z                   Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
+   561→2026-08-08T11:02:35.5217547Z                                                         ^^^^^^^^^^
+   562→2026-08-08T11:02:35.5225399Z ../../../.pub-cache/hosted/pub.dev/chewie-1.8.7/lib/src/material/material_controls.dart:687:51: Error: The method 'withValues' isn't defined for the class 'Color'.
+   563→2026-08-08T11:02:35.5226332Z  - 'Color' is from 'dart:ui'.
+   564→2026-08-08T11:02:35.5226886Z Try correcting the name to the name of an existing method, or defining a method named 'withValues'.
+   565→2026-08-08T11:02:35.5227488Z                   Theme.of(context).disabledColor.withValues(alpha: .5),
+   566→2026-08-08T11:02:35.5228518Z                                                   ^^^^^^^^^^
+   567→2026-08-08T11:02:35.6210169Z ../../../.pub-cache/hosted/pub.dev/chewie-1.8.7/lib/src/material/material_desktop_controls.dart:651:57: Error: The method 'withValues' isn't defined for the class 'Color'.
+   568→2026-08-08T11:02:35.6211541Z  - 'Color' is from 'dart:ui'.
+   569→2026-08-08T11:02:35.6212014Z Try correcting the name to the name of an existing method, or defining a method named 'withValues'.
+   570→2026-08-08T11:02:35.6212549Z                   Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
+   571→2026-08-08T11:02:35.6213050Z                                                         ^^^^^^^^^^
+   572→2026-08-08T11:02:35.6213820Z ../../../.pub-cache/hosted/pub.dev/chewie-1.8.7/lib/src/material/material_desktop_controls.dart:653:51: Error: The method 'withValues' isn't defined for the class 'Color'.
+   573→2026-08-08T11:02:35.6214405Z  - 'Color' is from 'dart:ui'.
+   574→2026-08-08T11:02:35.6214789Z Try correcting the name to the name of an existing method, or defining a method named 'withValues'.
+   575→2026-08-08T11:02:35.6215217Z                   Theme.of(context).disabledColor.withValues(alpha: 0.5),
+   576→2026-08-08T11:02:35.6215586Z                                                   ^^^^^^^^^^
+   577→2026-08-08T11:02:38.5221616Z Target kernel_snapshot failed: Exception
+   578→2026-08-08T11:02:38.5222516Z 
+   579→2026-08-08T11:02:38.6208029Z 
+   580→2026-08-08T11:02:38.6224668Z FAILURE: Build failed with an exception.
+   581→2026-08-08T11:02:38.6232365Z 
+   582→2026-08-08T11:02:38.6233174Z * What went wrong:
+   583→2026-08-08T11:02:38.6233956Z Execution failed for task ':app:compileFlutterBuildDebug'.
+   584→2026-08-08T11:02:38.6234832Z > Process 'command '/opt/hostedtoolcache/flutter/stable-3.19.6-x64/flutter/bin/flutter'' finished with non-zero exit value 1
+   585→2026-08-08T11:02:38.6235238Z 
+   586→2026-08-08T11:02:38.6235430Z * Try:
+   587→2026-08-08T11:02:38.6235779Z > Run with --stacktrace option to get the stack trace.
+   588→2026-08-08T11:02:38.6236409Z > Run with --info or --debug option to get more log output.
+   589→2026-08-08T11:02:38.6236964Z > Run with --scan to get full insights.
+   590→2026-08-08T11:02:38.6237461Z > Get more help at https://help.gradle.org.
+   591→2026-08-08T11:02:38.6237828Z 
+   592→2026-08-08T11:02:38.6238066Z BUILD FAILED in 1m 46s
+   593→2026-08-08T11:02:38.9920291Z Running Gradle task 'assembleDebug'...                            106.5s
+   594→2026-08-08T11:02:38.9947716Z Gradle task assembleDebug failed with exit code 1
+   595→2026-08-08T11:02:38.9977541Z ##[error]Process completed with exit code 1.
+   596→2026-08-08T11:02:39.0108512Z Post job cleanup.
+   597→2026-08-08T11:02:39.0112711Z ##[start-action display=Cache pub dependencies;id=__2a7a41ff-e349-40af-8c3e-64226dc71fb6.cache-pub]
+   598→2026-08-08T11:02:39.0115133Z ##[end-action id=__2a7a41ff-e349-40af-8c3e-64226dc71fb6.cache-pub;outcome=skipped;conclusion=skipped;duration_ms=0]
+   599→2026-08-08T11:02:39.0116863Z ##[start-action display=Cache Flutter;id=__2a7a41ff-e349-40af-8c3e-64226dc71fb6.cache-flutter]
+   600→2026-08-08T11:02:39.0118657Z ##[end-action id=__2a7a41ff-e349-40af-8c3e-64226dc71fb6.cache-flutter;outcome=skipped;conclusion=skipped;duration_ms=0]
+   601→2026-08-08T11:02:39.0170461Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+   602→2026-08-08T11:02:39.0171526Z Post job cleanup.
+   603→2026-08-08T11:02:39.1196904Z (node:2721) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+   604→2026-08-08T11:02:39.1197464Z (Use `node --trace-deprecation ...` to show where the warning was created)
+   605→2026-08-08T11:02:39.1326384Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+   606→2026-08-08T11:02:39.1327370Z Post job cleanup.
+   607→2026-08-08T11:02:39.1939357Z [command]/usr/bin/git version
+   608→2026-08-08T11:02:39.1967254Z git version 2.54.0
+   609→2026-08-08T11:02:39.1991243Z Temporarily overriding HOME='/home/runner/work/_temp/6dff8b0d-1232-4696-b8ce-feca7224fab7' before making global git config changes
+   610→2026-08-08T11:02:39.1992232Z Adding repository directory to the temporary git global config as a safe directory
+   611→2026-08-08T11:02:39.1995191Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/leaksextape-app/leaksextape-app
+   612→2026-08-08T11:02:39.2024056Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+   613→2026-08-08T11:02:39.2046330Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+   614→2026-08-08T11:02:39.2207490Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+   615→2026-08-08T11:02:39.2224262Z http.https://github.com/.extraheader
+   616→2026-08-08T11:02:39.2229336Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+   617→2026-08-08T11:02:39.2250971Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+   618→2026-08-08T11:02:39.2401984Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+   619→2026-08-08T11:02:39.2424310Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+   620→2026-08-08T11:02:39.2675147Z Cleaning up orphan processes
+   621→2026-08-08T11:02:39.2883861Z Terminate orphan process: pid (2514) (java)
+   622→2026-08-08T11:02:39.2899996Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-java@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
