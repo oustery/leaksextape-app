@@ -141,7 +141,7 @@ class LeakSexTapeService {
     }
   }
 
-  /// Get video source URL with multiple fallbacks
+  /// Get video source URL with multiple fallbacks - FIXED: prioritize direct URLs
   Future<VideoSource> getVideoSource(String videoId) async {
     final cacheKey = 'source_$videoId';
     
@@ -149,7 +149,10 @@ class LeakSexTapeService {
       // Check cache first
       final cached = _cache.get(cacheKey);
       if (cached != null && cached is VideoSource) {
-        return cached;
+        // Don't return cached embed URLs - they don't work
+        if (cached.format != 'embed') {
+          return cached;
+        }
       }
 
       // Try to get direct video URL from video page
@@ -166,46 +169,107 @@ class LeakSexTapeService {
         
         if (source != null) {
           debugPrint('ApiService: Got video source: ${source.format} - ${source.quality}');
-          _cache.set(cacheKey, source, ttl: const Duration(hours: 1));
+          
+          // Only cache if it's a direct URL (not embed - embed doesn't work!)
+          if (source.format != 'embed') {
+            _cache.set(cacheKey, source, ttl: const Duration(hours: 1));
+          }
+          
           return source;
         }
         
-        // Fallback to embed URL
-        debugPrint('ApiService: Using embed fallback');
-        final embedSource = VideoSource(
-          videoUrl: '${AppConstants.baseUrl}/embed/$videoId',
-          quality: 'auto',
-          format: 'embed',
-        );
-        _cache.set(cacheKey, embedSource, ttl: const Duration(minutes: 30));
-        return embedSource;
+        // Try to extract direct URL manually from response body
+        debugPrint('ApiService: Parser failed, trying manual extraction');
+        final manualUrl = _extractDirectVideoUrl(response.body, videoId);
+        if (manualUrl != null) {
+          final directSource = VideoSource(
+            videoUrl: manualUrl,
+            quality: 'auto',
+            format: 'mp4',
+          );
+          _cache.set(cacheKey, directSource, ttl: const Duration(hours: 1));
+          return directSource;
+        }
       }
       
-      // If video page fails, try embed directly
-      debugPrint('ApiService: Video page failed (${response.statusCode}), trying embed');
-      final embedSource = VideoSource(
+      // Last resort: try to construct get_file URL pattern
+      debugPrint('ApiService: Trying get_file URL pattern');
+      final getFileUrl = await _tryGetFileUrl(videoId);
+      if (getFileUrl != null) {
+        final fileSource = VideoSource(
+          videoUrl: getFileUrl,
+          quality: 'auto',
+          format: 'mp4',
+        );
+        _cache.set(cacheKey, fileSource, ttl: const Duration(minutes: 30));
+        return fileSource;
+      }
+      
+      // Absolute last resort - embed (likely won't work but try anyway)
+      debugPrint('ApiService: Using embed as absolute last resort');
+      return VideoSource(
         videoUrl: '${AppConstants.baseUrl}/embed/$videoId',
         quality: 'auto',
         format: 'embed',
       );
-      return embedSource;
       
     } on TimeoutException {
-      debugPrint('ApiService: Video source timeout, using embed fallback');
-      return VideoSource(
-        videoUrl: '${AppConstants.baseUrl}/embed/$videoId',
-        quality: 'auto',
-        format: 'embed',
-      );
+      debugPrint('ApiService: Video source timeout');
+      // Return error that will be handled by UI
+      throw Exception('Превышено время ожидания загрузки видео');
     } catch (e) {
       debugPrint('ApiService: Video source error: $e');
-      // Always return embed as last resort
-      return VideoSource(
-        videoUrl: '${AppConstants.baseUrl}/embed/$videoId',
-        quality: 'auto',
-        format: 'embed',
-      );
+      rethrow;  // Let the caller handle the error properly
     }
+  }
+  
+  /// Extract direct video URL from HTML response body
+  String? _extractDirectVideoUrl(String htmlBody, String videoId) {
+    try {
+      // Look for video_url in flashvars
+      final urlPattern = RegExp(r"video_url[\s]*:[\s]*['\"]([^'\"]+)['\"]", caseSensitive: false);
+      final match = urlPattern.firstMatch(htmlBody);
+      if (match != null) {
+        var url = match.group(1)?.trim() ?? '';
+        if (url.isNotEmpty && url.startsWith('http')) {
+          debugPrint('ApiService: Extracted direct URL from flashvars');
+          return url;
+        }
+      }
+      
+      // Look for get_file URLs
+      final getFilePattern = RegExp(r'(https?://[^'\"]*get_file[^'\"]*\.mp4[^\'"]*)', caseSensitive: false);
+      final fileMatch = getFilePattern.firstMatch(htmlBody);
+      if (fileMatch != null) {
+        var url = fileMatch.group(1)?.trim() ?? '';
+        if (url.isNotEmpty) {
+          debugPrint('ApiService: Extracted get_file URL');
+          return url;
+        }
+      }
+    } catch (e) {
+      debugPrint('ApiService: Error extracting direct URL: $e');
+    }
+    return null;
+  }
+  
+  /// Try to construct get_file URL by fetching video page and finding token
+  Future<String?> _tryGetFileUrl(String videoId) async {
+    try {
+      // The site uses pattern: /get_file/{x}/{token}/{category}/{videoId}/{videoId}.mp4/?v-acctoken={token}
+      // We need to extract this from the page
+      final url = '${AppConstants.baseUrl}/video/$videoId/';
+      final response = await _client.get(Uri.parse(url), headers: _headers).timeout(
+        const Duration(seconds: 15),
+      );
+      
+      if (response.statusCode == 200) {
+        return _extractDirectVideoUrl(response.body, videoId);
+      }
+    } catch (e) {
+      debugPrint('ApiService: Error getting file URL: $e');
+    }
+    return null;
   }
 
   /// Get categories with better parsing

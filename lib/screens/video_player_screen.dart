@@ -5,11 +5,14 @@ import 'package:chewie/chewie.dart';
 import 'package:webview_flutter/webview_flutter.dart' as webview;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
+import 'package:html/parser.dart' as html_parser;
 import '../models/video_model.dart';
 import '../providers/video_provider.dart';
 import '../services/api_service.dart';
 import '../services/database_service.dart';
 import '../utils/constants.dart' show AppConstants;
+import '../utils/html_parser.dart';
 import '../widgets/video_card_widget.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
@@ -216,15 +219,60 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   Future<void> _loadRelatedVideos() async {
     try {
-      final provider = context.read<VideoProvider>();
-      if (provider.videos.isNotEmpty) {
+      // Method 1: Try to get from provider (if available from home screen)
+      try {
+        final provider = context.read<VideoProvider>();
+        if (provider.videos.isNotEmpty) {
+          final providerVideos = provider.videos.where((v) => v.id != widget.videoId).take(10).toList();
+          if (providerVideos.length >= 3) {  // Only use if we have enough
+            setState(() {
+              _relatedVideos = providerVideos;
+            });
+            return;  // Success, don't try other methods
+          }
+        }
+      } catch (_) {
+        // Provider might not be available, continue with API
+      }
+      
+      // Method 2: Fetch related videos from the current video page HTML
+      debugPrint('VideoPlayer: Loading related videos from API');
+      final api = LeakSexTapeService();
+      
+      // Fetch the video page and extract related videos from it
+      final url = '${AppConstants.baseUrl}/video/${widget.videoId}/';
+      final response = await http.get(Uri.parse(url), headers: {
+        'User-Agent': AppConstants.userAgent,
+        'Accept': 'text/html,application/xhtml+xml',
+      }).timeout(const Duration(seconds: 15));
+      
+      if (response.statusCode == 200) {
+        final document = html_parser.parse(response.body);
+        final videos = HtmlParserUtil.parseVideoList(document);
+        
+        if (videos.length > 1) {  // More than just the current video
+          setState(() {
+            _relatedVideos = videos.where((v) => v.id != widget.videoId).take(10).toList();
+          });
+          debugPrint('VideoPlayer: Loaded ${_relatedVideos.length} related videos from page');
+          return;
+        }
+      }
+      
+      // Method 3: Fallback to latest videos
+      debugPrint('VideoPlayer: Falling back to latest videos');
+      final latestResponse = await api.getLatestVideos(page: 1);
+      if (latestResponse.videos.isNotEmpty) {
         setState(() {
-          _relatedVideos = provider.videos.take(10).toList()
-            .where((v) => v.id != widget.videoId)
-            .toList();
+          _relatedVideos = latestResponse.videos
+              .where((v) => v.id != widget.videoId)
+              .take(10)
+              .toList();
         });
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('VideoPlayer: Error loading related videos: $e');
+    }
   }
 
   Future<void> _toggleFavorite() async {

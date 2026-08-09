@@ -37,7 +37,7 @@ class SearchParams {
 
   Map<String, String> toQueryParams() {
     final params = <String, String>{
-      'k': query,
+      'q': query,  // Fixed: site uses 'q' not 'k'
       'sort': sortBy,
       'page': page.toString(),
     };
