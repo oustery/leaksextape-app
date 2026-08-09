@@ -226,8 +226,8 @@ class LeakSexTapeService {
   /// Extract direct video URL from HTML response body
   String? _extractDirectVideoUrl(String htmlBody, String videoId) {
     try {
-      // Look for video_url in flashvars
-      final urlPattern = RegExp(r"video_url[\s]*:[\s]*['\"]([^'\"]+)['\"]", caseSensitive: false);
+      // Look for video_url in flashvars - use simple pattern to avoid quote escaping issues
+      final urlPattern = RegExp(r'video_url\s*:\s*["\x27]([^"\x27]+)["\x27]', caseSensitive: false);
       final match = urlPattern.firstMatch(htmlBody);
       if (match != null) {
         var url = match.group(1)?.trim() ?? '';
@@ -238,7 +238,7 @@ class LeakSexTapeService {
       }
       
       // Look for get_file URLs
-      final getFilePattern = RegExp(r'(https?://[^'\"]*get_file[^'\"]*\.mp4[^\'"]*)', caseSensitive: false);
+      final getFilePattern = RegExp(r'(https?://[^\s"\x27]*get_file[^\s"\x27]*\.mp4[^\s"\x27]*)', caseSensitive: false);
       final fileMatch = getFilePattern.firstMatch(htmlBody);
       if (fileMatch != null) {
         var url = fileMatch.group(1)?.trim() ?? '';
