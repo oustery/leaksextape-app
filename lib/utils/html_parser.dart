@@ -9,7 +9,7 @@ class HtmlParserUtil {
   // Constants for validation
   static const int _maxTitleLength = 200;
   static const int _maxVideosPerPage = 50;
-  static const Set<String> _invalidSchemes = {'javascript', 'data', 'mailto', 'tel'};
+  static final Set<String> _invalidSchemes = {'javascript', 'data', 'mailto', 'tel'};
   static final RegExp _validVideoExtensions = RegExp(r'\.(mp4|webm|m3u8|mkv)(\?|$)', caseSensitive: false);
   static final RegExp _numericOnly = RegExp(r'^[\d\s.,]+$');
 
@@ -19,15 +19,12 @@ class HtmlParserUtil {
     
     try {
       // Strategy 1: Primary selector for leak-sex-tape.com (.item class)
-      final videoElements = document.querySelectorAll(
-        '.item'
-      );
+      final videoElements = document.querySelectorAll('.item');
 
       for (final element in videoElements.take(_maxVideosPerPage)) {
         try {
           final video = _parseVideoItem(element);
           if (video != null && video.id.isNotEmpty && _isValidVideoId(video.id)) {
-            // Avoid duplicates
             if (!videos.any((v) => v.id == video.id)) {
               videos.add(video);
             }
@@ -91,20 +88,6 @@ class HtmlParserUtil {
   }
 
   /// Parse video item - OPTIMIZED for leak-sex-tape.com structure
-  /// HTML structure:
-  /// <div class="item">
-  ///   <a href="/video/ID/slug/" title="Title">
-  ///     <div class="img">
-  ///       <img class="thumb lazy-load" data-original="thumbnail_url" data-webp="webp_url" />
-  ///     </div>
-  ///     <strong class="title">Title</strong>
-  ///     <div class="wrap">
-  ///       <div class="duration">8:08</div>
-  ///       <div class="rating positive">84%</div>
-  ///       <div class="views">574.8k</div>
-  ///     </div>
-  ///   </a>
-  /// </div>
   static VideoItem? _parseVideoItem(dom.Element itemElement) {
     try {
       // Find the anchor tag with video link
@@ -252,7 +235,6 @@ class HtmlParserUtil {
   }
 
   /// Parse video source URL - OPTIMIZED for leak-sex-tape.com
-  /// The site uses JavaScript flashvars with video_url field
   static VideoSource? parseVideoSource(dom.Document document, String videoId) {
     try {
       // Method 1: Extract video_url from script tags (PRIMARY for leak-sex-tape.com)
@@ -296,9 +278,9 @@ class HtmlParserUtil {
       }
       return null;
     }
+  }
 
   /// Extract video source from flashvars JavaScript - PRIMARY METHOD
-  /// Pattern: video_url: 'https://leak-sex-tape.com/get_file/.../ID.mp4/?v-acctoken=...'
   static VideoSource? _extractSourceFromFlashvars(dom.Document document) {
     final scripts = document.querySelectorAll('script:not([src])');
     
@@ -313,19 +295,15 @@ class HtmlParserUtil {
       }
 
       // Pattern 1: video_url: 'URL' or video_url: "URL"
-      var urlPatterns = [
-        // Exact video_url pattern
-        RegExp(r"video_url[\s]*:[\s]*['\"]([^'\"]+)['\"]", caseSensitive: false),
-        // video_url with get_file
-        RegExp(r"video_url[\s]*:[\s]*['\"]([^'\"]*get_file[^'\"]*)['\"]", caseSensitive: false),
-        // Direct MP4 URLs
-        RegExp(r"'(https?:\/\/[^']*\.mp4[^']*)'", caseSensitive: false),
-        RegExp(r'"(https?:\/\/[^"]*\.mp4[^"]*)"', caseSensitive: false),
-        // Embed URLs as fallback
-        RegExp(r"embed['\"\s\/]+(\d+)", caseSensitive: false),
-      ];
+      final pattern1 = RegExp("video_url[\\s]*:[\\s]*['\"]([^'\"]+)['\"]", caseSensitive: false);
+      final pattern2 = RegExp("video_url[\\s]*:[\\s]*['\"]([^'\"]*get_file[^'\"]*)['\"]", caseSensitive: false);
+      final pattern3 = RegExp(r"'(https?://[^']*\.mp4[^']*)'", caseSensitive: false);
+      final pattern4 = RegExp(r'"(https?://[^"]*\.mp4[^"]*)"', caseSensitive: false);
+      final pattern5 = RegExp("embed['\"\\s/]+(\d+)", caseSensitive: false);
+      
+      final List<RegExp> patterns = [pattern1, pattern2, pattern3, pattern4, pattern5];
 
-      for (final pattern in urlPatterns) {
+      for (final pattern in patterns) {
         try {
           final match = pattern.firstMatch(content);
           if (match != null) {
@@ -360,7 +338,6 @@ class HtmlParserUtil {
   }
 
   /// Parse categories - OPTIMIZED for leak-sex-tape.com
-  /// Structure: .list-categories-items > .cat-title > a
   static List<Category> parseCategories(dom.Document document) {
     final categories = <Category>[];
     final seenNames = <String>{};
@@ -596,7 +573,6 @@ class HtmlParserUtil {
       img.attributes['data-thumb'],
       img.attributes['src'],
       img.attributes['data-lazy-src'],
-      img.attributes['data-original'],
     ];
     
     for (final source in sources) {

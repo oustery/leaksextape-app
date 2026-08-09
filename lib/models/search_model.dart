@@ -1,5 +1,4 @@
 import '../models/video_model.dart';
-import '../models/category_model.dart';
 
 class SearchParams {
   final String query;

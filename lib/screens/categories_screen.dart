@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../models/category_model.dart' as app_models;
 import '../providers/video_provider.dart';
 import '../widgets/shimmer_loading.dart';
-import 'home_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});

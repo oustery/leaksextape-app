@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:webview_flutter/webview_flutter.dart' as webview;
-import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/video_model.dart';
-import '../models/category_model.dart';
 import '../providers/video_provider.dart';
 import '../services/api_service.dart';
 import '../services/database_service.dart';
+import '../utils/constants.dart' show AppConstants;
 import '../widgets/video_card_widget.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
@@ -285,7 +284,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       builder: (context) {
         return SafeArea(
           child: Column(
-            mainAxisSize: Main.min,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
                 padding: const EdgeInsets.all(16),
@@ -517,6 +516,3 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     super.dispose();
   }
 }
-
-/// Import AppConstants for share URL
-import '../utils/constants.dart' show AppConstants;
