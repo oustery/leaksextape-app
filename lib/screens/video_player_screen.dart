@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
+import 'package:webview_flutter/webview_flutter.dart' as webview;
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -28,9 +29,11 @@ class VideoPlayerScreen extends StatefulWidget {
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   VideoPlayerController? _videoController;
   ChewieController? _chewieController;
+  webview.WebViewController? _webViewController;
   bool _isLoading = true;
   String? _errorMessage;
   bool _isFavorite = false;
+  bool _isEmbed = false;  // Track if using embed mode
   List<VideoQuality> _qualities = [];
   int _currentQualityIndex = 0;
   List<VideoItem> _relatedVideos = [];
@@ -60,20 +63,34 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   Future<void> _loadVideoSource() async {
     try {
-      setState(() => _isLoading = true);
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
       
       final api = LeakSexTapeService();
       final source = await api.getVideoSource(widget.videoId);
       
       if (source != null && mounted) {
-        _initializePlayer(source.videoUrl);
+        final url = source.videoUrl;
         
-        // Simulate multiple qualities (in real app, parse from source)
+        // Determine if this is an embed URL or direct video URL
+        _isEmbed = source.format == 'embed' || url.contains('/embed/');
+        
+        if (_isEmbed) {
+          debugPrint('VideoPlayer: Using WebView for embed URL');
+          _initializeWebView(url);
+        } else {
+          debugPrint('VideoPlayer: Using video player for direct URL');
+          _initializePlayer(url);
+        }
+        
+        // Setup qualities
         _qualities = [
-          VideoQuality(label: 'Auto', url: source.videoUrl),
+          VideoQuality(label: 'Auto', url: url),
           if (source.isHD)
-            VideoQuality(label: source.quality, url: source.videoUrl),
-          VideoQuality(label: '480p', url: source.videoUrl),
+            VideoQuality(label: source.quality, url: url),
+          VideoQuality(label: '480p', url: url),
         ];
       }
     } catch (e) {
@@ -86,6 +103,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     }
   }
 
+  /// Initialize native video player for direct MP4/URLs
   void _initializePlayer(String url) {
     _videoController?.dispose();
     _chewieController?.dispose();
@@ -99,7 +117,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         videoPlayerController: _videoController!,
         autoPlay: true,
         looping: false,
-        aspectRatio: _videoController!.value.aspectRatio,
+        aspectRatio: _videoController!.value.aspectRatio > 0 
+            ? _videoController!.value.aspectRatio 
+            : 16 / 9,
         allowFullScreen: true,
         allowMuting: true,
         showControls: true,
@@ -109,7 +129,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           bufferedColor: Colors.grey[300]!,
           backgroundColor: Theme.of(context).colorScheme.surface,
         ),
-        placeholder: widget.video != null
+        placeholder: widget.video != null && widget.video!.thumbnailUrl.isNotEmpty
             ? CachedNetworkImage(imageUrl: widget.video!.thumbnailUrl)
             : null,
         errorBuilder: (context, errorMessage) {
@@ -124,6 +144,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   style: const TextStyle(color: Colors.white),
                   textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: _openInExternalBrowser,
+                  child: const Text('Open in Browser', style: TextStyle(color: Colors.white70)),
+                ),
               ],
             ),
           );
@@ -132,20 +157,65 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
       setState(() {
         _isLoading = false;
+        _isEmbed = false;
       });
     }).catchError((error) {
+      debugPrint('VideoPlayer: Error initializing player: $error');
       if (mounted) {
+        // Fallback to WebView if video player fails
         setState(() {
-          _errorMessage = 'Failed to load video: $error';
+          _isEmbed = true;
           _isLoading = false;
         });
+        _initializeWebView(url);
       }
+    });
+  }
+
+  /// Initialize WebView for embed URLs
+  void _initializeWebView(String url) {
+    _webViewController = webview.WebViewController()
+      ..setJavaScriptMode(webview.JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        webview.NavigationDelegate(
+          onProgress: (int progress) {
+            if (progress == 100 && mounted) {
+              setState(() => _isLoading = false);
+            }
+          },
+          onPageStarted: (String url) {
+            debugPrint('WebView: Page started: $url');
+            if (mounted) {
+              setState(() => _isLoading = true);
+            }
+          },
+          onPageFinished: (String url) {
+            debugPrint('WebView: Page finished: $url');
+            if (mounted) {
+              setState(() => _isLoading = false);
+            }
+          },
+          onWebResourceError: (webview.WebResourceError error) {
+            debugPrint('WebView: Error: ${error.description}');
+            if (mounted) {
+              setState(() {
+                _errorMessage = 'Failed to load video player';
+                _isLoading = false;
+              });
+            }
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(url));
+
+    setState(() {
+      _isEmbed = true;
+      _isLoading = false;
     });
   }
 
   Future<void> _loadRelatedVideos() async {
     try {
-      // Load latest as "related" for demo
       final provider = context.read<VideoProvider>();
       if (provider.videos.isNotEmpty) {
         setState(() {
@@ -181,16 +251,27 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   Future<void> _shareVideo() async {
-    final url = 'https://leak-sex-tape.com/video/${widget.videoId}';
+    final url = '${AppConstants.baseUrl}/video/${widget.videoId}/';
     
     try {
-      // Try native share first
-      // For now, just copy to clipboard or open URL
       final uri = Uri.parse(url);
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       }
     } catch (_) {}
+  }
+
+  /// Open video in external browser as fallback
+  Future<void> _openInExternalBrowser() async {
+    final url = '${AppConstants.baseUrl}/video/${widget.videoId}/';
+    try {
+      final uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      debugPrint('Error opening browser: $e');
+    }
   }
 
   void _showQualitySelector() {
@@ -204,7 +285,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       builder: (context) {
         return SafeArea(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: Main.min,
             children: [
               Padding(
                 padding: const EdgeInsets.all(16),
@@ -223,7 +304,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   onTap: () {
                     setState(() => _currentQualityIndex = index);
                     Navigator.pop(context);
-                    _initializePlayer(quality.url);
+                    if (_isEmbed) {
+                      _initializeWebView(quality.url);
+                    } else {
+                      _initializePlayer(quality.url);
+                    }
                   },
                 );
               }),
@@ -235,7 +320,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   void _openRelatedVideo(VideoItem video) {
-    // FIX: Use push instead of pushReplacement to allow back navigation
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -278,10 +362,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 onSelected: (value) {
                   if (value == 'quality') {
                     _showQualitySelector();
+                  } else if (value == 'browser') {
+                    _openInExternalBrowser();
                   }
                 },
                 itemBuilder: (context) => [
                   const PopupMenuItem(value: 'quality', child: Text('Quality')),
+                  const PopupMenuItem(value: 'browser', child: Text('Open in Browser')),
                 ],
               ),
             ],
@@ -379,7 +466,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       );
     }
 
-    if (_errorMessage != null) {
+    if (_errorMessage != null && !_isEmbed) {
       return Container(
         color: Colors.black,
         child: Center(
@@ -388,12 +475,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             children: [
               const Icon(Icons.error_outline, color: Colors.white54, size: 48),
               const SizedBox(height: 12),
-              Text(_errorMessage!, style: const TextStyle(color: Colors.white54)),
+              Text(_errorMessage!, style: const TextStyle(color: Colors.white54), textAlign: TextAlign.center),
               const SizedBox(height: 16),
               ElevatedButton.icon(
                 onPressed: _loadVideoSource,
                 icon: const Icon(Icons.refresh),
                 label: const Text('Retry'),
+              ),
+              const SizedBox(height: 8),
+              TextButton.icon(
+                onPressed: _openInExternalBrowser,
+                icon: const Icon(Icons.open_in_new, size: 16),
+                label: const Text('Open in Browser', style: TextStyle(color: Colors.white70)),
               ),
             ],
           ),
@@ -401,7 +494,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       );
     }
 
-    if (_chewieController != null) {
+    // Show WebView for embed URLs
+    if (_isEmbed && _webViewController != null) {
+      return SizedBox(
+        height: double.infinity,
+        child: webview.WebViewWidget(controller: _webViewController!),
+      );
+    }
+
+    // Show Chewie player for direct video URLs
+    if (_chewieController != null && !_isEmbed) {
       return Chewie(controller: _chewieController!);
     }
 
@@ -415,3 +517,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     super.dispose();
   }
 }
+
+/// Import AppConstants for share URL
+import '../utils/constants.dart' show AppConstants;

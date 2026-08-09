@@ -21,6 +21,9 @@ dependencies:
   video_player: ^2.8.3
   chewie: ^1.7.1
   
+  # WebView (for embed video support)
+  webview_flutter: ^4.4.2
+  
   # URL Launcher (for sharing/opening links)
   url_launcher: ^6.2.1
   

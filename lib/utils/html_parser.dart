@@ -4,7 +4,7 @@ import '../models/video_model.dart';
 import '../models/category_model.dart';
 import 'constants.dart';
 
-/// Enhanced HTML Parser with robust error handling and validation
+/// Enhanced HTML Parser for leak-sex-tape.com with robust error handling
 class HtmlParserUtil {
   // Constants for validation
   static const int _maxTitleLength = 200;
@@ -13,19 +13,19 @@ class HtmlParserUtil {
   static final RegExp _validVideoExtensions = RegExp(r'\.(mp4|webm|m3u8|mkv)(\?|$)', caseSensitive: false);
   static final RegExp _numericOnly = RegExp(r'^[\d\s.,]+$');
 
-  /// Parse video list from HTML document with fallback strategies
+  /// Parse video list from HTML document - OPTIMIZED for leak-sex-tape.com
   static List<VideoItem> parseVideoList(dom.Document document) {
     final videos = <VideoItem>[];
     
     try {
-      // Strategy 1: Try specific video item selectors (more precise)
+      // Strategy 1: Primary selector for leak-sex-tape.com (.item class)
       final videoElements = document.querySelectorAll(
-        '.video-item, .thumb-item, .video-block, .video-thumb, .thumb'
+        '.item'
       );
 
       for (final element in videoElements.take(_maxVideosPerPage)) {
         try {
-          final video = _parseVideoElement(element);
+          final video = _parseVideoItem(element);
           if (video != null && video.id.isNotEmpty && _isValidVideoId(video.id)) {
             // Avoid duplicates
             if (!videos.any((v) => v.id == video.id)) {
@@ -41,7 +41,27 @@ class HtmlParserUtil {
         }
       }
 
-      // Strategy 2: Fallback to links with video patterns
+      // Strategy 2: Fallback to generic video selectors
+      if (videos.isEmpty) {
+        final fallbackElements = document.querySelectorAll(
+          '.video-item, .thumb-item, .video-block, .video-thumb, [class*="video"]'
+        );
+
+        for (final element in fallbackElements.take(_maxVideosPerPage)) {
+          try {
+            final video = _parseVideoElementGeneric(element);
+            if (video != null && 
+                video.id.isNotEmpty && 
+                !videos.any((v) => v.id == video.id)) {
+              videos.add(video);
+            }
+          } catch (e) {
+            continue;
+          }
+        }
+      }
+
+      // Strategy 3: Last resort - links with video patterns
       if (videos.isEmpty) {
         final links = document.querySelectorAll('a[href*="/video/"], a[href*="/v/"]');
         
@@ -53,11 +73,7 @@ class HtmlParserUtil {
                 !videos.any((v) => v.id == video.id)) {
               videos.add(video);
             }
-          } catch (e, stackTrace) {
-            debugPrint('HtmlParser: Error parsing link: $e');
-            if (kDebugMode) {
-              debugPrint('Stack: $stackTrace');
-            }
+          } catch (e) {
             continue;
           }
         }
@@ -74,10 +90,99 @@ class HtmlParserUtil {
     return videos;
   }
 
-  /// Parse single video element with enhanced extraction
-  static VideoItem? _parseVideoElement(dom.Element element) {
+  /// Parse video item - OPTIMIZED for leak-sex-tape.com structure
+  /// HTML structure:
+  /// <div class="item">
+  ///   <a href="/video/ID/slug/" title="Title">
+  ///     <div class="img">
+  ///       <img class="thumb lazy-load" data-original="thumbnail_url" data-webp="webp_url" />
+  ///     </div>
+  ///     <strong class="title">Title</strong>
+  ///     <div class="wrap">
+  ///       <div class="duration">8:08</div>
+  ///       <div class="rating positive">84%</div>
+  ///       <div class="views">574.8k</div>
+  ///     </div>
+  ///   </a>
+  /// </div>
+  static VideoItem? _parseVideoItem(dom.Element itemElement) {
     try {
-      // Extract ID from href or data attribute
+      // Find the anchor tag with video link
+      final anchor = itemElement.querySelector('a[href*="/video/"]');
+      if (anchor == null) return null;
+
+      final href = anchor.attributes['href'] ?? '';
+      if (href.isEmpty) return null;
+
+      // Extract video ID from URL: /video/1513/slug/
+      final id = _extractVideoId(href);
+      if (id == null || id.isEmpty) return null;
+
+      // Extract title from <strong class="title"> or title attribute
+      String title = '';
+      final titleEl = itemElement.querySelector('strong.title');
+      if (titleEl != null) {
+        title = titleEl.text.trim();
+      }
+      if (title.isEmpty) {
+        title = anchor.attributes['title'] ?? '';
+      }
+      if (title.isEmpty) return null;
+
+      // Extract thumbnail - CRITICAL FIX: use data-original or data-webp
+      String thumbnailUrl = '';
+      final img = itemElement.querySelector('img.thumb, img[data-original], img[data-webp], img.lazy-load');
+      if (img != null) {
+        // Priority: data-webp (WebP is smaller) > data-original > src
+        thumbnailUrl = img.attributes['data-webp'] ?? 
+                       img.attributes['data-original'] ?? 
+                       img.attributes['src'] ?? '';
+        
+        // Skip placeholder images (1x1 GIF)
+        if (_isPlaceholderImage(thumbnailUrl)) {
+          thumbnailUrl = '';
+        }
+      }
+
+      // Extract duration from .duration
+      String duration = '';
+      final durationEl = itemElement.querySelector('.duration');
+      if (durationEl != null) {
+        duration = durationEl.text.trim();
+      }
+
+      // Extract views from .views (e.g., "574.8k" -> 574800)
+      int views = 0;
+      final viewsEl = itemElement.querySelector('.views');
+      if (viewsEl != null) {
+        views = _parseViewCount(viewsEl.text.trim());
+      }
+
+      // Extract rating from .rating (e.g., "84%" -> 84.0)
+      double rating = 0.0;
+      final ratingEl = itemElement.querySelector('.rating');
+      if (ratingEl != null) {
+        rating = _parseRating(ratingEl.text.trim());
+      }
+
+      return VideoItem(
+        id: id,
+        title: _sanitizeString(title, maxLength: _maxTitleLength),
+        thumbnailUrl: _normalizeImageUrl(thumbnailUrl),
+        duration: duration,
+        views: views,
+        rating: rating,
+        dateAdded: DateTime.now().toIso8601String(),
+      );
+    } catch (e) {
+      debugPrint('HtmlParser: Error in _parseVideoItem: $e');
+      return null;
+    }
+  }
+
+  /// Generic video element parser for other site structures
+  static VideoItem? _parseVideoElementGeneric(dom.Element element) {
+    try {
       String? id;
       final anchor = element.querySelector('a') ?? 
                      (element.localName == 'a' ? element : null);
@@ -86,7 +191,6 @@ class HtmlParserUtil {
         final href = anchor.attributes['href'] ?? '';
         id = _extractVideoId(href);
         
-        // If no ID from pattern, use last path segment
         if ((id == null || id.isEmpty) && href.isNotEmpty) {
           id = href.split('/').lastWhere(
             (segment) => segment.isNotEmpty,
@@ -97,32 +201,25 @@ class HtmlParserUtil {
         id = element.attributes['data-id'] ?? element.attributes['id'];
       }
 
-      // Extract title safely
       String title = _extractTitle(element, anchor);
 
-      // Validate required fields
       if (id == null || id.isEmpty || title.isEmpty) return null;
       
-      // Sanitize inputs
-      id = _sanitizeString(id, maxLength: 50);
-      title = _sanitizeString(title, maxLength: _maxTitleLength);
-
       return VideoItem(
-        id: id,
-        title: title,
-        thumbnailUrl: _extractThumbnail(element),
+        id: _sanitizeString(id, maxLength: 50),
+        title: _sanitizeString(title, maxLength: _maxTitleLength),
+        thumbnailUrl: _extractThumbnailGeneric(element),
         duration: _extractDuration(element),
         views: _extractViews(element),
         rating: _extractRating(element),
         dateAdded: DateTime.now().toIso8601String(),
       );
     } catch (e) {
-      debugPrint('HtmlParser: Error in _parseVideoElement: $e');
       return null;
     }
   }
 
-  /// Parse video from link element with safe string handling
+  /// Parse video from link element (fallback)
   static VideoItem? _parseVideoFromLink(dom.Element link) {
     try {
       final href = link.attributes['href'] ?? '';
@@ -131,7 +228,6 @@ class HtmlParserUtil {
       final id = _extractVideoId(href);
       if (id == null || id.isEmpty) return null;
       
-      // Safe title extraction - FIX: RangeError prevention
       final rawText = link.text?.trim() ?? '';
       final title = rawText.isEmpty 
           ? (link.attributes['title'] ?? '')
@@ -151,21 +247,21 @@ class HtmlParserUtil {
         dateAdded: '',
       );
     } catch (e) {
-      debugPrint('HtmlParser: Error in _parseVideoFromLink: $e');
       return null;
     }
   }
 
-  /// Parse video source URL with validation - FIX: Hardcoded URL removed
+  /// Parse video source URL - OPTIMIZED for leak-sex-tape.com
+  /// The site uses JavaScript flashvars with video_url field
   static VideoSource? parseVideoSource(dom.Document document, String videoId) {
     try {
-      // Method 1: Extract from script tags (flashvars/player config)
-      final source = _extractSourceFromScripts(document);
+      // Method 1: Extract video_url from script tags (PRIMARY for leak-sex-tape.com)
+      final source = _extractSourceFromFlashvars(document);
       if (source != null) return source;
 
       // Method 2: Look for iframe embed sources
       final iframe = document.querySelector(
-        'iframe[src*="player"], iframe[src*="embed"], iframe[src*="video"]'
+        'iframe[src*="embed"], iframe[src*="player"], iframe[src*="video"]'
       );
       if (iframe != null) {
         final src = iframe.attributes['src'] ?? '';
@@ -189,7 +285,10 @@ class HtmlParserUtil {
         }
       }
 
-      return null;
+      // Method 4: Fallback to embed URL pattern
+      final embedUrl = '${AppConstants.baseUrl}/embed/$videoId';
+      return VideoSource(videoUrl: embedUrl, quality: 'auto', format: 'embed');
+      
     } catch (e, stackTrace) {
       debugPrint('HtmlParser: Error parsing video source: $e');
       if (kDebugMode) {
@@ -197,35 +296,33 @@ class HtmlParserUtil {
       }
       return null;
     }
-  }
 
-  /// Extract video source from script tags with multiple regex patterns
-  static VideoSource? _extractSourceFromScripts(dom.Document document) {
+  /// Extract video source from flashvars JavaScript - PRIMARY METHOD
+  /// Pattern: video_url: 'https://leak-sex-tape.com/get_file/.../ID.mp4/?v-acctoken=...'
+  static VideoSource? _extractSourceFromFlashvars(dom.Document document) {
     final scripts = document.querySelectorAll('script:not([src])');
     
     for (final script in scripts) {
       final content = script.text;
       
-      if (!content.contains('flashvars') && 
-          !content.contains('video_url') && 
-          !content.contains('source')) {
+      // Check if this script contains video-related data
+      if (!content.contains('video_url') && 
+          !content.contains('video_url:') &&
+          !content.contains('get_file')) {
         continue;
       }
 
-      // Multiple URL extraction patterns
-      final urlPatterns = [
-        // Pattern 1: video_url = "..." or video_url: "..."
-        RegExp(r'video_url[\s]*[=:][\s]*["\x27]([^\x22\x27]+)["\x27]', caseSensitive: false),
-        // Pattern 2: source file with mp4 extension
-        RegExp(r'source[\s]*[=:][\s]*["\x27]([^\x22\x27]*\.mp4[^\x22\x27]*)["\x27]', caseSensitive: false),
-        // Pattern 3: file = "..."
-        RegExp(r'\bfile\b[\s]*[=:][\s]*["\x27]([^\x22\x27]+)["\x27]', caseSensitive: false),
-        // Pattern 4: Access token pattern
-        RegExp(r'v-acctoken=([^&"\s\x27]+)', caseSensitive: false),
-        // Pattern 5: Single-quoted MP4 URLs
-        RegExp(r"\x27([^\x27]*\.mp4(?:\?[^\x27]*)?)\x27", caseSensitive: false),
-        // Pattern 6: Double-quoted URLs with common domains
-        RegExp(r'"(https?:\/\/[^"]*\.(?:mp4|webm|m3u8)[^"]*)"', caseSensitive: false),
+      // Pattern 1: video_url: 'URL' or video_url: "URL"
+      var urlPatterns = [
+        // Exact video_url pattern
+        RegExp(r"video_url[\s]*:[\s]*['\"]([^'\"]+)['\"]", caseSensitive: false),
+        // video_url with get_file
+        RegExp(r"video_url[\s]*:[\s]*['\"]([^'\"]*get_file[^'\"]*)['\"]", caseSensitive: false),
+        // Direct MP4 URLs
+        RegExp(r"'(https?:\/\/[^']*\.mp4[^']*)'", caseSensitive: false),
+        RegExp(r'"(https?:\/\/[^"]*\.mp4[^"]*)"', caseSensitive: false),
+        // Embed URLs as fallback
+        RegExp(r"embed['\"\s\/]+(\d+)", caseSensitive: false),
       ];
 
       for (final pattern in urlPatterns) {
@@ -236,7 +333,12 @@ class HtmlParserUtil {
             
             if (videoUrl.isEmpty) continue;
             
-            // Process relative URLs - FIX: Use AppConstants.baseUrl instead of hardcoded
+            // If we got just an ID from embed pattern, construct full URL
+            if (RegExp(r'^\d+$').hasMatch(videoUrl)) {
+              videoUrl = '${AppConstants.baseUrl}/embed/$videoUrl';
+            }
+            
+            // Process relative URLs
             videoUrl = _normalizeUrl(videoUrl);
             
             // Validate before returning
@@ -249,7 +351,6 @@ class HtmlParserUtil {
             }
           }
         } catch (e) {
-          debugPrint('HtmlParser: Regex pattern error: $e');
           continue;
         }
       }
@@ -258,14 +359,16 @@ class HtmlParserUtil {
     return null;
   }
 
-  /// Parse categories with deduplication
+  /// Parse categories - OPTIMIZED for leak-sex-tape.com
+  /// Structure: .list-categories-items > .cat-title > a
   static List<Category> parseCategories(dom.Document document) {
     final categories = <Category>[];
     final seenNames = <String>{};
     
     try {
+      // Primary selector for leak-sex-tape.com
       final categoryElements = document.querySelectorAll(
-        '.category-item, .cat-item, [class*="category"] a, .categories a'
+        '.cat-title a, .list-categories-items a, [class*="cat"] a[href*="/categories/"]'
       );
 
       for (final element in categoryElements) {
@@ -276,18 +379,58 @@ class HtmlParserUtil {
           // Validate and deduplicate
           if (name.isNotEmpty && 
               name.length < 100 && 
-              !seenNames.contains(name.toLowerCase())) {
+              !seenNames.contains(name.toLowerCase()) &&
+              name != 'All') {  // Skip "All" filter link
             seenNames.add(name.toLowerCase());
+            
+            // Try to extract thumbnail from parent or sibling
+            String? thumbnailUrl;
+            final parent = element.parent;
+            if (parent != null) {
+              final img = parent.querySelector('img');
+              if (img != null) {
+                thumbnailUrl = img.attributes['data-original'] ?? 
+                               img.attributes['src'] ?? null;
+              }
+            }
             
             categories.add(Category(
               id: _extractCategoryId(href, categories.length),
               name: name,
-              thumbnailUrl: null,
+              thumbnailUrl: thumbnailUrl != null ? _normalizeImageUrl(thumbnailUrl) : null,
             ));
           }
         } catch (e) {
           debugPrint('HtmlParser: Error parsing category: $e');
           continue;
+        }
+      }
+      
+      // Fallback: generic category selectors
+      if (categories.isEmpty) {
+        final fallbackElements = document.querySelectorAll(
+          '.category-item, .cat-item, [class*="category"] a, .categories a'
+        );
+
+        for (final element in fallbackElements) {
+          try {
+            final name = element.text.trim();
+            final href = element.attributes['href'] ?? '';
+            
+            if (name.isNotEmpty && 
+                name.length < 100 && 
+                !seenNames.contains(name.toLowerCase())) {
+              seenNames.add(name.toLowerCase());
+              
+              categories.add(Category(
+                id: _extractCategoryId(href, categories.length),
+                name: name,
+                thumbnailUrl: null,
+              ));
+            }
+          } catch (e) {
+            continue;
+          }
         }
       }
       
@@ -314,7 +457,6 @@ class HtmlParserUtil {
         try {
           final name = element.text.trim();
           
-          // Validate tag name
           if (name.isNotEmpty && 
               name.length < 50 &&
               !seenNames.contains(name.toLowerCase())) {
@@ -336,7 +478,7 @@ class HtmlParserUtil {
     return tags;
   }
 
-  /// Parse pagination info with safe defaults - FIX: Force unwrap removed
+  /// Parse pagination info with safe defaults
   static Map<String, int> parsePagination(dom.Document document) {
     const defaultResult = {'pages': 1, 'total': 100};
     
@@ -352,7 +494,6 @@ class HtmlParserUtil {
         el.text.trim().isNotEmpty && _numericOnly.hasMatch(el.text.trim())
       ).length;
       
-      // Extract total count from text
       int total = 100;
       final text = paginationEl.text;
       final totalMatches = RegExp(r'(?:total|of|results?)[:\s]*(\d+)', caseSensitive: false)
@@ -365,7 +506,6 @@ class HtmlParserUtil {
         }
       }
       
-      // Fallback: find any large number in text
       if (total <= 0) {
         final numbers = RegExp(r'\b(\d{3,})\b').allMatches(text)
             .map((m) => int.tryParse(m.group(1) ?? '') ?? 0)
@@ -392,9 +532,10 @@ class HtmlParserUtil {
   static String? _extractVideoId(String href) {
     if (href.isEmpty) return null;
     
-    // Common video URL patterns
+    // Patterns for leak-sex-tape.com: /video/1513/slug/
     final patterns = [
-      RegExp(r'/(?:video|v|watch|play)/(\d+)'),
+      RegExp(r'/video/(\d+)'),           // /video/1513/slug/
+      RegExp(r'/(?:v|watch|play)/(\d+)'), // Alternative patterns
       RegExp(r'[?&](?:v|id|video_id)=(\d+)'),
       RegExp(r'/(\d{4,})(?:\.html?|/|$)'),
     ];
@@ -412,14 +553,12 @@ class HtmlParserUtil {
   /// Check if video ID is valid
   static bool _isValidVideoId(String id) {
     if (id.isEmpty) return false;
-    // Should be numeric or alphanumeric, reasonable length
     return id.length <= 20 && 
            RegExp(r'^[\w\-]+$').hasMatch(id);
   }
 
   /// Extract title from element with multiple fallbacks
   static String _extractTitle(dom.Element element, dom.Element? anchor) {
-    // Try specific title elements first
     final titleSelectors = [
       '.title',
       '.video-title',
@@ -436,7 +575,6 @@ class HtmlParserUtil {
       }
     }
     
-    // Fallback to anchor attributes
     if (anchor != null) {
       return anchor.attributes['title'] ?? 
              anchor.attributes['alt'] ?? 
@@ -446,13 +584,14 @@ class HtmlParserUtil {
     return '';
   }
 
-  /// Extract thumbnail URL with data-src support
-  static String _extractThumbnail(dom.Element element) {
+  /// Extract thumbnail URL - GENERIC version (for non-optimized parsing)
+  static String _extractThumbnailGeneric(dom.Element element) {
     final img = element.querySelector('img');
     if (img == null) return '';
     
-    // Priority order: data-src → data-thumb → src → data-lazy-src
     final sources = [
+      img.attributes['data-original'],  // leak-sex-tape.com specific
+      img.attributes['data-webp'],      // WebP version
       img.attributes['data-src'],
       img.attributes['data-thumb'],
       img.attributes['src'],
@@ -483,7 +622,6 @@ class HtmlParserUtil {
       final el = element.querySelector(selector);
       if (el != null) {
         final text = el.text.trim();
-        // Validate duration format (e.g., "12:34", "1:23:45")
         if (RegExp(r'^[\d:]+$').hasMatch(text) || 
             RegExp(r'^\d+\s*(min|sec|h)$', caseSensitive: false).hasMatch(text)) {
           return text;
@@ -505,17 +643,32 @@ class HtmlParserUtil {
     for (final selector in selectors) {
       final el = element.querySelector(selector);
       if (el != null) {
-        final text = el.text.replaceAll(',', '').replaceAll('.', '');
-        final cleaned = text.replaceAll(RegExp(r'[^0-9]'), '');
-        final views = int.tryParse(cleaned);
-        if (views != null && views >= 0) return views;
+        return _parseViewCount(el.text.trim());
       }
     }
     
     return 0;
   }
 
-  /// Extract rating as double (0-100 or 0-5 scale)
+  /// Parse view count string to integer (handles "574.8k", "1.2M", etc.)
+  static int _parseViewCount(String text) {
+    if (text.isEmpty) return 0;
+    
+    final cleaned = text.replaceAll(',', '').replaceAll('.', '').toLowerCase();
+    final numericPart = cleaned.replaceAll(RegExp(r'[^\d]'), '');
+    final views = int.tryParse(numericPart) ?? 0;
+    
+    // Handle multipliers
+    if (text.contains('k')) {
+      return (views * 1000).round();
+    } else if (text.contains('m')) {
+      return (views * 1000000).round();
+    }
+    
+    return views;
+  }
+
+  /// Extract rating as double (0-100 scale)
   static double _extractRating(dom.Element element) {
     final selectors = [
       '.rating', '.stars', '.score', '.percent',
@@ -526,14 +679,24 @@ class HtmlParserUtil {
     for (final selector in selectors) {
       final el = element.querySelector(selector);
       if (el != null) {
-        var text = el.text.replaceAll('%', '').trim();
-        text = text.replaceAll(RegExp(r'[^\d.]'), '');
-        final rating = double.tryParse(text);
-        if (rating != null && rating >= 0) {
-          // Normalize to 0-100 scale if needed
-          return rating <= 5 ? rating * 20 : rating;
-        }
+        return _parseRating(el.text.trim());
       }
+    }
+    
+    return 0.0;
+  }
+
+  /// Parse rating string to double (handles "84%", "4.5", etc.)
+  static double _parseRating(String text) {
+    if (text.isEmpty) return 0.0;
+    
+    var cleaned = text.replaceAll('%', '').trim();
+    cleaned = cleaned.replaceAll(RegExp(r'[^\d.]'), '');
+    final rating = double.tryParse(cleaned);
+    
+    if (rating != null && rating >= 0) {
+      // Normalize to 0-100 scale if needed
+      return rating <= 5 ? rating * 20 : rating;
     }
     
     return 0.0;
@@ -566,19 +729,17 @@ class HtmlParserUtil {
     if (url.contains('.mkv')) return 'mkv';
     if (_validVideoExtensions.hasMatch(url)) return 'mp4';
     if (url.contains('embed') || url.contains('player')) return 'embed';
-    return 'mp4'; // Default assumption
+    return 'mp4';
   }
 
-  /// Normalize URL - FIX: Uses AppConstants instead of hardcoded domain
+  /// Normalize URL
   static String _normalizeUrl(String url) {
     if (url.isEmpty) return url;
     
-    // Protocol-relative URL
     if (url.startsWith('//')) {
       return 'https:$url';
     }
     
-    // Absolute path (relative to domain)
     if (url.startsWith('/') && !url.startsWith('//')) {
       return '${AppConstants.baseUrl}$url';
     }
@@ -598,31 +759,29 @@ class HtmlParserUtil {
   static bool _isValidVideoUrl(String url) {
     if (url.isEmpty) return false;
     
-    // Basic scheme check
     final uri = Uri.tryParse(url);
     if (uri == null) return false;
     
-    // Block invalid schemes
     if (uri.hasScheme && _invalidSchemes.contains(uri.scheme.toLowerCase())) {
       return false;
     }
     
-    // Must be http(s) or protocol-relative
     if (uri.hasScheme && !['http', 'https'].contains(uri.scheme.toLowerCase())) {
       return false;
     }
     
-    // For direct video files, check extension or known patterns
     if (_validVideoExtensions.hasMatch(url)) {
       return true;
     }
     
-    // Allow embed/player URLs
     if (url.contains('embed') || url.contains('player') || url.contains('stream')) {
       return true;
     }
     
-    // Allow if it looks like a full URL with domain
+    if (url.contains('get_file')) {  // leak-sex-tape.com specific
+      return true;
+    }
+    
     if (uri.host.isNotEmpty && uri.host.contains('.')) {
       return true;
     }
@@ -651,10 +810,10 @@ class HtmlParserUtil {
       'default',
       'empty',
       'no-image',
-      'thumbnail',
       'loading',
       'spacer',
-      'gif', // Animated loading GIFs
+      'data:image/gif',  // Base64 placeholder GIF
+      'R0lGODlh',       // Base64 encoded 1x1 GIF
     ];
     
     final lowerUrl = url.toLowerCase();
@@ -665,15 +824,12 @@ class HtmlParserUtil {
   static String _sanitizeString(String input, {int maxLength = 100}) {
     if (input.isEmpty) return input;
     
-    // Trim whitespace
     var sanitized = input.trim();
     
-    // Truncate if too long
     if (sanitized.length > maxLength) {
       sanitized = sanitized.substring(0, maxLength);
     }
     
-    // Remove control characters except newlines/tabs
     sanitized = sanitized.replaceAll(RegExp(r'[\x00-\x08\x0B\x0C\x0E-\x1F]'), '');
     
     return sanitized;
@@ -683,11 +839,9 @@ class HtmlParserUtil {
   static String _extractCategoryId(String href, int fallbackIndex) {
     if (href.isEmpty) return fallbackIndex.toString();
     
-    // Try to extract slug or ID from URL
     final segments = href.split('/').where((s) => s.isNotEmpty).toList();
     if (segments.isNotEmpty) {
       final lastSegment = segments.last;
-      // Return slug without file extension
       return lastSegment.replaceAll(RegExp(r'\.html?$'), '');
     }
     
