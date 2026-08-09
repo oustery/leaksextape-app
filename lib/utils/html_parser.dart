@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:html/dom.dart' as dom;
 import '../models/video_model.dart';
 import '../models/category_model.dart';
@@ -526,7 +526,7 @@ class HtmlParserUtil {
     for (final selector in selectors) {
       final el = element.querySelector(selector);
       if (el != null) {
-        let text = el.text.replaceAll('%', '').trim();
+        var text = el.text.replaceAll('%', '').trim();
         text = text.replaceAll(RegExp(r'[^\d.]'), '');
         final rating = double.tryParse(text);
         if (rating != null && rating >= 0) {
