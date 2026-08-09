@@ -67,8 +67,8 @@ class VideoCardWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-                  // HD Badge
-                  if (video.views > 100000)
+                  // HD Badge - FIX: Show based on quality indicators, not just views
+                  if (_shouldShowHDBadge(video))
                     Positioned(
                       top: 8,
                       left: 8,
@@ -239,4 +239,17 @@ class VideoCardHorizontal extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Helper function to determine if HD badge should be shown
+/// Shows HD for high-quality videos (high rating OR very popular)
+bool _shouldShowHDBadge(VideoItem video) {
+  // Show if rating indicates good quality (> 7.0)
+  if (video.rating > 7.0) return true;
+  
+  // Show if extremely popular (likely HD content)
+  if (video.views > 500000) return true;
+  
+  // Don't show HD badge by default
+  return false;
 }

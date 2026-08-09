@@ -235,7 +235,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   void _openRelatedVideo(VideoItem video) {
-    Navigator.pushReplacement(
+    // FIX: Use push instead of pushReplacement to allow back navigation
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => VideoPlayerScreen(videoId: video.id, video: video),

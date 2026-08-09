@@ -39,6 +39,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // FIX: Critical - Prevent memory leak by disposing ScrollController
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   Future<void> _onRefresh() async {
     await context.read<VideoProvider>().refresh();
   }

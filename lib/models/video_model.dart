@@ -64,8 +64,8 @@ class VideoItem {
         'rating': rating,
         'date_added': dateAdded,
         'preview_url': previewUrl,
-        'tags': tags,
-        'channel': channel,
+        'tags': tags ?? [],  // Safe null handling
+        'channel': channel ?? '',  // Safe null handling
       };
 
   String get formattedViews {
@@ -97,6 +97,13 @@ class VideoSource {
     );
   }
 
+  /// Serialize to JSON for caching/storage
+  Map<String, dynamic> toJson() => {
+    'video_url': videoUrl,
+    'quality': quality,
+    'format': format,
+  };
+
   bool get isHD => quality.contains('720') || quality.contains('1080');
 }
 
@@ -105,6 +112,16 @@ class VideoQuality {
   final String url;
 
   VideoQuality({required this.label, required this.url});
+
+  factory VideoQuality.fromJson(Map<String, dynamic> json) => VideoQuality(
+    label: json['label'] ?? json['quality'] ?? 'auto',
+    url: json['url'] ?? json['video_url'] ?? '',
+  );
+
+  Map<String, dynamic> toJson() => {
+    'label': label,
+    'url': url,
+  };
 }
 
 class VideoListResponse {

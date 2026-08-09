@@ -68,8 +68,11 @@ class LeakSexTapeService {
     
     try {
       final queryParams = params.toQueryParams();
-      final queryString = queryParams.entries.map((e) => '${e.key}=${e.value}').join('&');
-      final url = '${AppConstants.baseUrl}${AppConstants.searchEndpoint}?$queryString';
+      // FIX: Properly encode query parameters to prevent injection
+      final encodedQueryParams = queryParams.entries.map((e) =>
+        '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}'
+      ).join('&');
+      final url = '${AppConstants.baseUrl}${AppConstants.searchEndpoint}?$encodedQueryParams';
       
       final response = await _client.get(Uri.parse(url), headers: _headers).timeout(
             const Duration(seconds: 15),
@@ -156,8 +159,10 @@ class LeakSexTapeService {
 
   Future<List<Tag>> searchTags(String query) async {
     try {
-      final url = '${AppConstants.baseUrl}${AppConstants.tagsEndpoint}?q=$query';
-      final response = await _client.get(Uri.parse(url), headers: _headers).timeout(
+      // FIX: Use Uri class for proper query parameter encoding
+      final uri = Uri.parse('${AppConstants.baseUrl}${AppConstants.tagsEndpoint}')
+          .replace(queryParameters: {'q': query});
+      final response = await _client.get(uri, headers: _headers).timeout(
             const Duration(seconds: 10),
           );
 

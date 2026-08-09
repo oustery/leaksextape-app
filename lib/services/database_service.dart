@@ -39,8 +39,8 @@ class DatabaseService {
         views INTEGER DEFAULT 0,
         rating REAL DEFAULT 0,
         date_added TEXT,
-        preview_url,
-        channel,
+        preview_url TEXT,  -- FIX: Added explicit type
+        channel TEXT,       -- FIX: Added explicit type
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
       )
     ''');
@@ -190,7 +190,8 @@ class DatabaseService {
     return results.map((map) => SearchHistoryItem(
       id: map['id']?.toString() ?? '',
       query: map['query']?.toString() ?? '',
-      searchedAt: DateTime.parse(map['searched_at']?.toString() ?? DateTime.now().toIso8601String()),
+      // FIX: Safe DateTime parsing with fallback
+      searchedAt: DateTime.tryParse(map['searched_at']?.toString() ?? '') ?? DateTime.now(),
     )).toList();
   }
 

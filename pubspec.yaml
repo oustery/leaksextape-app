@@ -47,14 +47,5 @@ dependency_overrides:
 flutter:
   uses-material-design: true
   
-  assets:
-    - assets/icons/
-  
-  fonts:
-    - family: Poppins
-      fonts:
-        - asset: assets/fonts/Poppins-Regular.ttf
-        - asset: assets/fonts/Poppins-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Poppins-Bold.ttf
-          weight: 700
+  # Note: assets/fonts will be added when font files are available
+  # Currently using system fonts to avoid build errors
